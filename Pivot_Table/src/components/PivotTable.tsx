@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -14,43 +14,40 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/csvStore";
 
-type Employee = {
-  id: number;
-  name: string;
-  department: string;
-  role: string;
-  location: string;
-  salary: number;
-};
+const PivotTable = () => {
+  const csvData = useSelector((state: RootState) => state.csv.data);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
+  let slicedData = csvData.slice(0, 20);
 
-const sampleData: Employee[] = [
-  { id: 1, name: "Alice", department: "HR", role: "Manager", location: "NY", salary: 75000 },
-  { id: 2, name: "Bob", department: "IT", role: "Developer", location: "LA", salary: 90000 },
-  { id: 3, name: "Charlie", department: "Finance", role: "Analyst", location: "Chicago", salary: 85000 },
-  { id: 4, name: "Diana", department: "IT", role: "Tester", location: "NY", salary: 70000 },
-  { id: 5, name: "Ethan", department: "HR", role: "Recruiter", location: "LA", salary: 65000 },
-];
-
-const allColumns = ["id", "name", "department", "role", "location", "salary"];
-
-export default function PivotTable() {
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(["name", "department", "role"]);
+  const allColumns = useMemo(() => {
+    if(!slicedData || slicedData.length === 0) return [];
+    return Object.keys(slicedData[0]);
+  }, [csvData])
 
   const handleColumnChange = (event: any) => {
     const value = event.target.value;
     setVisibleColumns(typeof value === "string" ? value.split(",") : value);
   };
 
+  if(!slicedData || slicedData.length === 0){
+    return (
+      <Typography
+      variant="h6"
+      sx={{ mt: 5, textAlign: "center", color: "gray" }}
+      >
+        No CSV Data uploaded yet.
+      </Typography>
+    )
+  }
+
   return (
     <Box p={4}>
       <Typography variant="h5" gutterBottom>
-        Pivot Table
+        CSV Data Viewer
       </Typography>
-
-      <FormControl>
-
-      </FormControl>
 
       <FormControl sx={{ minWidth: 300, mb: 3 }}>
         <InputLabel id="columns-label">Select Columns</InputLabel>
@@ -73,7 +70,7 @@ export default function PivotTable() {
         <Table>
           <TableHead>
             <TableRow>
-              {visibleColumns.map((col) => (
+              {(visibleColumns.length ? visibleColumns : allColumns).map((col) => (
                 <TableCell key={col} sx={{ fontWeight: "bold" }}>
                   {col.toUpperCase()}
                 </TableCell>
@@ -81,11 +78,13 @@ export default function PivotTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sampleData.map((row) => (
-              <TableRow key={row.id}>
-                {visibleColumns.map((col) => (
-                  <TableCell key={col}>{(row as any)[col]}</TableCell>
-                ))}
+            {slicedData.map((row: any, index: number) => (
+              <TableRow key={index}>
+                {(visibleColumns.length ? visibleColumns : allColumns).map(
+                  (col) => (
+                    <TableCell key={col}>{row[col]}</TableCell>
+                  )
+                )}
               </TableRow>
             ))}
           </TableBody>
@@ -93,4 +92,6 @@ export default function PivotTable() {
       </TableContainer>
     </Box>
   );
-}
+};
+
+export default PivotTable;
