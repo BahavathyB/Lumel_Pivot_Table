@@ -11,12 +11,10 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store/csvStore";
 import _ from "lodash";
 
-// Import the new modules
 import ExcelView from "./ExcelView";
 import FieldZones, { type ValueField } from "./FieldZones";
 import PivotTableView from "./PivotTableView";
 
-// -------------------- TYPES --------------------
 type CSVRow = Record<string, string | number | null | undefined>;
 type AggregationType = "sum" | "avg" | "count" | "max" | "min";
 
@@ -60,7 +58,6 @@ interface RowSpanInfo {
   value: string;
 }
 
-// -------------------- PIVOT TABLE --------------------
 const PivotTable: React.FC = () => {
   const csvData = useSelector((state: RootState) => state.csv.data) as CSVRow[];
 
@@ -75,7 +72,7 @@ const PivotTable: React.FC = () => {
   const [values, setValues] = useState<ValueField[]>([]);
   const [draggedField, setDraggedField] = useState<string | null>(null);
 
-  // Pagination state
+   // -------------------- PAGINATION --------------------
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
 
@@ -83,12 +80,11 @@ const PivotTable: React.FC = () => {
     if (allColumns.length > 0) setAvailableFields(allColumns);
   }, [allColumns]);
 
-  // Reset to first page when data changes
   useEffect(() => {
     setPage(0);
   }, [csvData, rows, columns, values]);
 
-  // -------------------- PAGINATION HANDLERS --------------------
+
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -106,13 +102,11 @@ const PivotTable: React.FC = () => {
     const fieldToMove = field || draggedField;
     if (!fieldToMove) return;
 
-    // Remove from current zones
     setAvailableFields((prev) => prev.filter((f) => f !== fieldToMove));
     setRows((prev) => prev.filter((f) => f !== fieldToMove));
     setColumns((prev) => prev.filter((f) => f !== fieldToMove));
     setValues((prev) => prev.filter((v) => v.field !== fieldToMove));
 
-    // Add to target zone
     if (zone === "rows") setRows((prev) => [...prev, fieldToMove]);
     if (zone === "columns") setColumns((prev) => [...prev, fieldToMove]);
     if (zone === "values")
@@ -173,7 +167,7 @@ const PivotTable: React.FC = () => {
     handleDrop(toZone, field);
   };
 
-  // -------------------- HIERARCHY --------------------
+  // -------------------- GROUPING --------------------
   const buildNestedRows = useMemo(() => {
     if (!rows.length || !csvData.length) return [];
 
@@ -204,7 +198,6 @@ const PivotTable: React.FC = () => {
   }, [csvData, rows]);
 
   const flatRowData = useMemo((): FlatRowData[] => {
-    // Case: Only values configured (no rows, no columns) - create single row
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
       return [{
         keys: ["total"],
@@ -215,7 +208,6 @@ const PivotTable: React.FC = () => {
       }];
     }
 
-    // Case: Only columns and values configured (no rows) - create single row
     if (columns.length > 0 && rows.length === 0 && values.length > 0) {
       return [{
         keys: ["total"],
@@ -226,7 +218,6 @@ const PivotTable: React.FC = () => {
       }];
     }
 
-    // Case: Only columns configured (no rows, no values) - return empty array (no data rows needed)
     if (rows.length === 0 && columns.length > 0 && values.length === 0) {
       return [];
     }
@@ -252,7 +243,6 @@ const PivotTable: React.FC = () => {
           });
         } else {
           traverse(node.children, newKeys, newValues);
-          // Add subtotal row after all children for top-level parents only
           if (node.level === 0) {
             result.push({
               keys: newKeys,
@@ -271,7 +261,6 @@ const PivotTable: React.FC = () => {
     return result;
   }, [buildNestedRows, rows, csvData, columns, values]);
 
-  // Apply pagination to flatRowData
   const paginatedFlatRowData = useMemo(() => {
     const startIndex = page * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -324,9 +313,7 @@ const PivotTable: React.FC = () => {
     return collect(buildNestedColumns);
   }, [buildNestedColumns]);
 
-  // -------------------- FINAL COLUMNS LOGIC --------------------
   const finalColumns: FinalColumn[] = useMemo(() => {
-    // Case 1: Only values configured (no rows, no columns)
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
       return values.map((valueField) => ({
         key: `${valueField.field}_${valueField.aggregation}`,
@@ -336,7 +323,6 @@ const PivotTable: React.FC = () => {
       }));
     }
 
-    // Case 2: Only rows and values configured (no columns)
     if (rows.length > 0 && columns.length === 0 && values.length > 0) {
       return values.map((valueField) => ({
         key: `total-${valueField.field}_${valueField.aggregation}`,
@@ -346,7 +332,6 @@ const PivotTable: React.FC = () => {
       }));
     }
 
-    // Case 3: Only columns configured (no rows, no values)
     if (rows.length === 0 && columns.length > 0 && values.length === 0) {
       return leafColumnKeys.map((key) => ({
         key,
@@ -356,7 +341,6 @@ const PivotTable: React.FC = () => {
       }));
     }
 
-    // Case 4: Only columns and values configured (no rows)
     if (columns.length > 0 && rows.length === 0 && values.length > 0) {
       return leafColumnKeys.flatMap((colKey) =>
         values.map((valueField) => ({
@@ -368,7 +352,6 @@ const PivotTable: React.FC = () => {
       );
     }
 
-    // Case 5: Full configuration (rows, columns, values)
     if (leafColumnKeys.length === 0 && values.length === 0) return [];
     if (values.length === 0)
       return leafColumnKeys.map((key) => ({
@@ -388,16 +371,13 @@ const PivotTable: React.FC = () => {
     );
   }, [leafColumnKeys, values, rows, columns]);
 
-  // -------------------- CALCULATE ROWSPAN FOR ROW GROUPING --------------------
   const rowSpanMap = useMemo((): Map<number, Map<number, RowSpanInfo>> => {
     const map = new Map<number, Map<number, RowSpanInfo>>();
 
     if (paginatedFlatRowData.length === 0) return map;
 
-    // Skip rowspan calculation for cases without rows
     if (rows.length === 0) return map;
 
-    // For each level (column) in row grouping
     rows.forEach((_, levelIndex) => {
       const levelMap = new Map<number, RowSpanInfo>();
       let currentValue = paginatedFlatRowData[0]?.values[levelIndex];
@@ -407,9 +387,7 @@ const PivotTable: React.FC = () => {
       for (let i = 1; i < paginatedFlatRowData.length; i++) {
         const value = paginatedFlatRowData[i]?.values[levelIndex];
 
-        // Skip subtotal rows when calculating rowspan
         if (paginatedFlatRowData[i]?.isSubtotal) {
-          // Save the span info before the subtotal
           if (spanCount > 0) {
             levelMap.set(startIndex, {
               rowIndex: startIndex,
@@ -421,7 +399,6 @@ const PivotTable: React.FC = () => {
           continue;
         }
 
-        // Check if all parent levels match (for nested grouping)
         let parentMatch = true;
         for (let j = 0; j < levelIndex; j++) {
           if (paginatedFlatRowData[i]?.values[j] !== paginatedFlatRowData[i - 1]?.values[j]) {
@@ -437,7 +414,6 @@ const PivotTable: React.FC = () => {
         ) {
           spanCount++;
         } else {
-          // Save the span info for the starting row
           if (spanCount > 0) {
             levelMap.set(startIndex, {
               rowIndex: startIndex,
@@ -445,14 +421,12 @@ const PivotTable: React.FC = () => {
               value: currentValue ?? "",
             });
           }
-          // Start new group
           currentValue = value;
           startIndex = i;
           spanCount = 1;
         }
       }
 
-      // Don't forget the last group
       if (spanCount > 0) {
         levelMap.set(startIndex, {
           rowIndex: startIndex,
@@ -466,6 +440,7 @@ const PivotTable: React.FC = () => {
 
     return map;
   }, [paginatedFlatRowData, rows]);
+
 
   // -------------------- AGGREGATION --------------------
   const calculateAggregations = (cellData: CSVRow[]) => {
@@ -524,7 +499,6 @@ const PivotTable: React.FC = () => {
   ): string => {
     const { aggregation } = valueField;
 
-    // Filter out non-numeric values and convert to numbers
     const numericValues = childValues
       .map((val) => {
         if (val === "-" || val === "") return null;
@@ -537,23 +511,18 @@ const PivotTable: React.FC = () => {
 
     switch (aggregation) {
       case "sum":
-        // Sum of individual sums
         return _.sum(numericValues).toString();
 
       case "avg":
-        // Sum of individual averages
         return _.sum(numericValues).toFixed(2);
 
       case "count":
-        // Sum of individual counts
         return _.sum(numericValues).toString();
 
       case "max":
-        // Sum of individual maximums
         return _.sum(numericValues).toString();
 
       case "min":
-        // Sum of individual minimums
         return _.sum(numericValues).toString();
 
       default:
@@ -561,19 +530,15 @@ const PivotTable: React.FC = () => {
     }
   };
 
-  // -------------------- PIVOT DATA LOGIC --------------------
   const pivotData = useMemo(() => {
     const data: Record<string, Record<string, Record<string, string>>> = {};
 
-    // Case 1: Only values configured (no rows, no columns)
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
-      // Create a single "total" row
       data["total"] = { total: {} };
       
       values.forEach((valueField) => {
         const aggKey = `${valueField.field}_${valueField.aggregation}`;
         
-        // Calculate aggregation across all data
         const matchingRows = csvData;
         if (matchingRows.length > 0) {
           data["total"]!["total"] = calculateAggregations(matchingRows);
@@ -582,7 +547,6 @@ const PivotTable: React.FC = () => {
       return data;
     }
 
-    // Case 2: Only rows and values configured (no columns)
     if (rows.length > 0 && columns.length === 0 && values.length > 0) {
       flatRowData.forEach((rowData) => {
         if (!data[rowData.key]) data[rowData.key] = {};
@@ -600,7 +564,6 @@ const PivotTable: React.FC = () => {
         }
       });
 
-      // Calculate subtotals for rows + values case
       flatRowData.forEach((rowData) => {
         if (rowData.isSubtotal) {
           const parentKey = rowData.keys[0];
@@ -634,9 +597,7 @@ const PivotTable: React.FC = () => {
       return data;
     }
 
-    // Case 3: Only columns and values configured (no rows)
     if (columns.length > 0 && rows.length === 0 && values.length > 0) {
-      // Create a single "total" row
       data["total"] = {};
       
       leafColumnKeys.forEach((colKey) => {
@@ -656,12 +617,10 @@ const PivotTable: React.FC = () => {
       return data;
     }
 
-    // Case 4: Only columns configured (no rows, no values) - no data needed
     if (rows.length === 0 && columns.length > 0 && values.length === 0) {
       return {};
     }
 
-    // Case 5: Full configuration with rows, columns, and values
     flatRowData.forEach((rowData) => {
       if (!data[rowData.key]) data[rowData.key] = {};
 
@@ -703,7 +662,6 @@ const PivotTable: React.FC = () => {
       }
     });
 
-    // Calculate subtotals for regular case
     if (columns.length > 0) {
       flatRowData.forEach((rowData) => {
         if (rowData.isSubtotal) {
@@ -740,16 +698,13 @@ const PivotTable: React.FC = () => {
     return data;
   }, [csvData, rows, columns, flatRowData, leafColumnKeys, values]);
 
-  // FIXED: Show Excel format only when NO fields are configured
   const hasConfiguredFields = rows.length > 0 || columns.length > 0 || values.length > 0;
   const showExcelFormat = !hasConfiguredFields;
 
-  // FIXED: Show pivot table when we have any field configuration
   const showPivotTable = hasConfiguredFields;
 
   return (
     <Box sx={{ display: "flex", height: "100%", gap: 2, pt: 3, pb: 3, overflow: "hidden" }}>
-      {/* Table Container - 75% width */}
       <Box sx={{ width: "75%", height: "100%", overflow: "auto" }}>
         {showExcelFormat ? (
           <ExcelView
@@ -780,7 +735,6 @@ const PivotTable: React.FC = () => {
         ) : null}
       </Box>
 
-      {/* Field Zones Container - 25% width */}
       <Box sx={{ width: "25%", height: "100%", overflow: "hidden" }}>
         <FieldZones
           availableFields={availableFields}

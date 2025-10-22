@@ -255,14 +255,13 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   </TableCell>
                 );
               } else {
-                return null; // no cells after subtotal col in subtotal rows
+                return null;
               }
             }
 
             const levelMap = rowSpanMap.get(levelIndex);
             const spanInfo = levelMap?.get(rowIndex);
 
-            // Render parent cell only at start index for merge
             if (!spanInfo || spanInfo.rowIndex !== rowIndex) {
               return null;
             }

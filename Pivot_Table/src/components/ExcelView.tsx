@@ -23,22 +23,52 @@ interface ExcelViewProps {
 }
 
 const ExcelView: React.FC<ExcelViewProps> = ({
-  csvData = [],
-  allColumns = [],
-  page = 0,
-  rowsPerPage = 10,
+  csvData,
+  allColumns,
+  page,
+  rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
 }) => {
-  const paginatedExcelData = (csvData || []).slice(
+  const paginatedExcelData = csvData.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
   return (
-    <Paper sx={{ p: 2, overflow: "auto" }}>
-      <TableContainer sx={{ maxHeight: 600 }}>
-        <Table stickyHeader>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <TableContainer 
+        sx={{ 
+          flex: 1,
+          maxHeight: "calc(100% - 52px)", 
+          position: "relative",
+          overflow: "auto",
+          "& .MuiTable-root": {
+            tableLayout: "auto", 
+          },
+          "&::-webkit-scrollbar": {
+            width: "6px",
+            height: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f5f5f5",
+            borderRadius: "3px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#c1c1c1",
+            borderRadius: "3px",
+            "&:hover": {
+              background: "#a8a8a8",
+            },
+          },
+          "&::-webkit-scrollbar-corner": {
+            background: "#f5f5f5",
+          },
+          scrollbarWidth: "thin",
+          scrollbarColor: "#c1c1c1 #f5f5f5",
+        }}
+      >
+        <Table stickyHeader sx={{ tableLayout: "auto" }}>
           <TableHead>
             <TableRow>
               <TableCell
@@ -48,7 +78,12 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                   backgroundColor: "primary.main",
                   textAlign: "center",
                   borderRight: "2px solid rgba(255,255,255,0.5)",
-                  minWidth: 80,
+                  fontSize: "0.75rem", 
+                  height: "32px", 
+                  padding: "4px 8px", 
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                   position: "sticky",
                   left: 0,
                   zIndex: 1200,
@@ -66,7 +101,13 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                     textAlign: "center",
                     borderLeft: "1px solid rgba(255,255,255,0.3)",
                     borderRight: "1px solid rgba(255,255,255,0.3)",
-                    minWidth: 120,
+                    fontSize: "0.75rem", 
+                    height: "32px", 
+                    padding: "4px 8px", 
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    minWidth: "auto", 
                   }}
                 >
                   {column}
@@ -80,6 +121,7 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                 key={index}
                 sx={{
                   backgroundColor: index % 2 ? "action.hover" : "background.default",
+                  height: "32px", 
                 }}
               >
                 <TableCell
@@ -88,10 +130,16 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                     backgroundColor: "primary.light",
                     color: "white",
                     borderRight: "1px solid #e0e0e0",
-                    minWidth: 80,
+                    fontSize: "0.75rem", 
+                    height: "32px", 
+                    padding: "4px 8px", 
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                     position: "sticky",
                     left: 0,
                     zIndex: 1100,
+                    minWidth: "auto", 
                   }}
                 >
                   {page * rowsPerPage + index + 1}
@@ -101,7 +149,13 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                     key={column}
                     sx={{
                       borderRight: "1px solid #e0e0e0",
-                      minWidth: 120,
+                      fontSize: "0.75rem", 
+                      height: "32px", 
+                      padding: "4px 8px", 
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      minWidth: "auto", 
                     }}
                   >
                     {String(row[column] ?? "")}
@@ -112,20 +166,53 @@ const ExcelView: React.FC<ExcelViewProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 20, 50, 100]}
-        component="div"
-        count={csvData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        sx={{
+
+      <Paper 
+        elevation={0}
+        sx={{ 
           borderTop: "1px solid #e0e0e0",
-          justifyContent: "flex-start",
+          backgroundColor: "white",
+          position: "sticky",
+          bottom: 0,
+          zIndex: 100,
+          minHeight: "44px", 
+          display: "flex",
+          alignItems: "center",
         }}
-      />
-    </Paper>
+      >
+        <TablePagination
+          rowsPerPageOptions={[10, 20, 50, 100]}
+          component="div"
+          count={csvData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+          sx={{
+            width: "100%",
+            "& .MuiTablePagination-toolbar": {
+              minHeight: "44px", 
+              justifyContent: "flex-start",
+              padding: "0 12px", 
+            },
+            "& .MuiTablePagination-spacer": {
+              flex: "none",
+            },
+            "& .MuiTablePagination-selectLabel": {
+              margin: 0,
+              fontSize: "0.75rem", 
+            },
+            "& .MuiTablePagination-displayedRows": {
+              margin: 0,
+              fontSize: "0.75rem", 
+            },
+            "& .MuiInputBase-root": {
+              fontSize: "0.75rem",
+            },
+          }}
+        />
+      </Paper>
+    </Box>
   );
 };
 

@@ -30,7 +30,6 @@ const NavBar: React.FC = () => {
         position: "frozen"
       }}
     >
-      {/* Left Section - Brand */}
       <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
         <Typography
           variant="h6"
@@ -48,7 +47,6 @@ const NavBar: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Right Section - Actions */}
       {hasData && (
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Chip
