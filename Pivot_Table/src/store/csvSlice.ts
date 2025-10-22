@@ -3,21 +3,25 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface CsvState {
     data: any[];
+    filename: string;
 }
 
 const initialState: CsvState = {
-    data: []
+    data: [],
+    filename: "",
 };
 
 const csvSlice = createSlice({
     name: "csv",
     initialState,
     reducers: {
-        setCsvData: (state, action: PayloadAction<any[]>) => {
-            state.data = action.payload;
+        setCsvData: (state, action: PayloadAction<{ data: any[]; filename: string }>) => {
+            state.data = action.payload.data;
+            state.filename = action.payload.filename;
         },
         clearCsvData: (state) => {
             state.data = [];
+            state.filename = "";
         }
     }
 });

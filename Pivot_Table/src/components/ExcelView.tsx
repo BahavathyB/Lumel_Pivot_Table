@@ -14,7 +14,7 @@ import {
 type CSVRow = Record<string, string | number | null | undefined>;
 
 interface ExcelViewProps {
-  slicedData: CSVRow[];
+  csvData: CSVRow[];
   allColumns: string[];
   page: number;
   rowsPerPage: number;
@@ -23,14 +23,14 @@ interface ExcelViewProps {
 }
 
 const ExcelView: React.FC<ExcelViewProps> = ({
-  slicedData = [],
+  csvData = [],
   allColumns = [],
   page = 0,
   rowsPerPage = 10,
   onPageChange,
   onRowsPerPageChange,
 }) => {
-  const paginatedExcelData = (slicedData || []).slice(
+  const paginatedExcelData = (csvData || []).slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -115,7 +115,7 @@ const ExcelView: React.FC<ExcelViewProps> = ({
       <TablePagination
         rowsPerPageOptions={[10, 20, 50, 100]}
         component="div"
-        count={slicedData.length}
+        count={csvData.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={onPageChange}
