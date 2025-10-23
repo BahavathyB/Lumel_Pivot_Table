@@ -94,11 +94,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
 }) => {
   // -------------------- TABLE STYLING CONSTANTS --------------------
   const cellHeight = 30;
-  const cellHeightPx = "30px";
-  const fontSize = "0.75rem";
-  const padding = "2px 8px";
-  const greyBorder = "0.5px solid rgba(0, 0, 0, 0.2)";
-  const whiteBorder = "0.5px solid white";
+  const cellHeightPx = "20px";
+  const fontSize = "0.7rem";
+  const padding = "2px 6px";
+  const greyBorder = "1px solid #e0e0e0";
 
   // -------------------- AGGREGATION CALCULATION --------------------
   const calculateAggregation = (
@@ -224,7 +223,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
             padding,
             verticalAlign: "middle",
             textAlign: "center",
-            backgroundColor: "#a5f6ccff",
+            backgroundColor: "#d4ecf1ff",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -244,7 +243,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               align="center"
               sx={{
                 fontWeight: "bold",
-                backgroundColor: "#a5f6ccff",
+                backgroundColor: "#d4ecf1ff",
                 fontSize,
                 height: cellHeightPx,
                 padding,
@@ -470,9 +469,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               <TableCell
                 key={`row-header-${idx}`}
                 sx={{
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
-                  backgroundColor: "primary.main",
+                  backgroundColor: "rgba(204, 203, 203, 1)",
                   textAlign: "center",
                   verticalAlign: "middle",
                   whiteSpace: "nowrap",
@@ -487,7 +486,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   position: "sticky",
                   top: 0,
                   zIndex: 90,
-                  borderLeft: whiteBorder,
+                  borderLeft: greyBorder,
                   borderTop: greyBorder,
                   borderBottom: greyBorder,
                 }}
@@ -509,9 +508,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 key={`row-header-${idx}`}
                 rowSpan={totalHeaderRows}
                 sx={{
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
-                  backgroundColor: "primary.main",
+                  backgroundColor: "rgba(204, 203, 203, 1)",
                   textAlign: "center",
                   verticalAlign: "middle",
                   whiteSpace: "nowrap",
@@ -526,7 +525,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   position: "sticky",
                   top: 0,
                   zIndex: 90,
-                  borderLeft: whiteBorder,
+                  borderLeft: greyBorder,
                   borderTop: greyBorder,
                   borderBottom: greyBorder,
                 }}
@@ -538,12 +537,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               <TableCell
                 key={`value-header-${idx}`}
                 sx={{
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
                   textAlign: "center",
-                  backgroundColor: "primary.light",
+                  backgroundColor: "rgba(204, 203, 203, 1)",
                   whiteSpace: "nowrap",
-                  fontSize,
+                  fontSize: "0.6rem",
                   height: cellHeightPx,
                   padding,
                   minWidth: "auto",
@@ -554,8 +553,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   position: "sticky",
                   top: 0,
                   zIndex: 90,
-                  borderLeft: whiteBorder,
-                  borderBottom: whiteBorder,
+                  borderLeft: greyBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {valueField.aggregation.toUpperCase()} ({valueField.field})
@@ -577,9 +576,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               key={`row-header-${idx}`}
               rowSpan={totalHeaderRows}
               sx={{
-                color: "white",
+                color: "black",
                 fontWeight: "bold",
-                backgroundColor: "primary.main",
+                backgroundColor: "rgba(204, 203, 203, 1)",
                 textAlign: "center",
                 verticalAlign: "middle",
                 whiteSpace: "nowrap",
@@ -594,7 +593,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 position: "sticky",
                 top: 0,
                 zIndex: 90,
-                borderLeft: whiteBorder,
+                borderLeft: greyBorder,
                 borderTop: greyBorder,
                 borderBottom: greyBorder,
               }}
@@ -603,17 +602,17 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
             </TableCell>
           ))}
 
-          {levels.length > 0 ? (
+          {levels.length > 0 && (
             levels[0]?.map((node) => (
               <TableCell
                 key={node.key}
                 align="center"
                 colSpan={node.colSpan}
                 sx={{
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
                   textAlign: "center",
-                  backgroundColor: "primary.main",
+                  backgroundColor: "rgba(204, 203, 203, 1)",
                   whiteSpace: "nowrap",
                   fontSize,
                   height: cellHeightPx,
@@ -629,42 +628,15 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   top: 0,
                   zIndex: 90,
                   boxSizing: "border-box",
-                  borderLeft: whiteBorder,
+                  borderLeft: greyBorder,
                   borderTop: greyBorder,
-                  borderBottom: whiteBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {node.value}
               </TableCell>
             ))
-          ) : values.length > 0 ? (
-            <TableCell
-              colSpan={values.length}
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                textAlign: "center",
-                backgroundColor: "primary.main",
-                whiteSpace: "nowrap",
-                fontSize,
-                height: cellHeightPx,
-                minHeight: cellHeightPx,
-                maxHeight: cellHeightPx,
-                padding,
-                minWidth: "auto",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                position: "sticky",
-                top: 0,
-                zIndex: 90,
-                borderLeft: whiteBorder,
-                borderTop: greyBorder,
-                borderBottom: whiteBorder,
-              }}
-            >
-              Values
-            </TableCell>
-          ) : null}
+          ) }
         </TableRow>
 
         {levels.slice(1).map((lvlNodes, levelIndex) => (
@@ -675,10 +647,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 align="center"
                 colSpan={node.colSpan}
                 sx={{
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
                   textAlign: "center",
-                  backgroundColor: "primary.main",
+                  backgroundColor: "rgba(204, 203, 203, 1)",
                   whiteSpace: "nowrap",
                   fontSize,
                   height: cellHeightPx,
@@ -694,8 +666,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   top: cellHeight * (levelIndex + 1),
                   zIndex: 89 - levelIndex,
                   boxSizing: "border-box",
-                  borderLeft: whiteBorder,
-                  borderBottom: whiteBorder,
+                  borderLeft: greyBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {node.value}
@@ -712,12 +684,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                     <TableCell
                       key={`${colKey}-${valueField.field}`}
                       sx={{
-                        color: "white",
+                        color: "black",
                         fontWeight: "bold",
                         textAlign: "center",
-                        backgroundColor: "primary.light",
+                        backgroundColor: "rgba(204, 203, 203, 1)",
                         whiteSpace: "nowrap",
-                        fontSize,
+                        fontSize: "0.6rem",
                         height: cellHeightPx,
                         minHeight: cellHeightPx,
                         maxHeight: cellHeightPx,
@@ -731,8 +703,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                         top: cellHeight * levels.length,
                         zIndex: 85,
                         boxSizing: "border-box",
-                        borderLeft: whiteBorder,
-                        borderBottom: whiteBorder,
+                        borderLeft: greyBorder,
+                        borderBottom: greyBorder,
                       }}
                     >
                       {valueField.aggregation.toUpperCase()} ({valueField.field}
@@ -744,12 +716,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   <TableCell
                     key={`value-${valueField.field}`}
                     sx={{
-                      color: "white",
+                      color: "black",
                       fontWeight: "bold",
                       textAlign: "center",
-                      backgroundColor: "primary.light",
+                      backgroundColor: "rgba(204, 203, 203, 1)",
                       whiteSpace: "nowrap",
-                      fontSize,
+                      fontSize: "0.6rem",
                       height: cellHeightPx,
                       minHeight: cellHeightPx,
                       maxHeight: cellHeightPx,
@@ -763,8 +735,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                       top: 0,
                       zIndex: 85,
                       boxSizing: "border-box",
-                      borderLeft: whiteBorder,
-                      borderBottom: whiteBorder,
+                      borderLeft: greyBorder,
+                      borderBottom: greyBorder,
                     }}
                   >
                     {valueField.aggregation.toUpperCase()} ({valueField.field})
@@ -841,7 +813,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
       </TableContainer>
 
       <Paper
-        elevation={0}
+        elevation={4}
         sx={{
           border: "1px solid #e0e0e0",
           backgroundColor: "white",

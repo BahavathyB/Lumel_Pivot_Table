@@ -640,8 +640,8 @@ const PivotTable: React.FC = () => {
   const showPivotTable = hasConfiguredFields;
 
   return (
-    <Box sx={{ display: "flex", height: "100%", gap: 2, pt: 3, pb: 3, overflow: "hidden" }}>
-      <Box sx={{ width: "75%", height: "100%", overflow: "auto" }}>
+    <Box sx={{ display: "flex", height: "95%", gap: 2, pt: 2, pb: 2, overflow: "hidden" }}>
+      <Box sx={{ width: "80%", height: "100%",mb: 0, overflow: "auto" }}>
         {showExcelFormat ? (
           <ExcelView
             csvData={csvData}
@@ -671,7 +671,7 @@ const PivotTable: React.FC = () => {
         ) : null}
       </Box>
 
-      <Box sx={{ width: "25%", height: "100%", overflow: "hidden" }}>
+      <Box sx={{ width: "20%", height: "100%", overflow: "hidden"}}>
         <FieldZones
           availableFields={availableFields}
           rows={rows}

@@ -71,39 +71,19 @@ const ExcelView: React.FC<ExcelViewProps> = ({
         <Table stickyHeader sx={{ tableLayout: "auto" }}>
           <TableHead>
             <TableRow>
-              <TableCell
-                sx={{
-                  color: "white",
-                  fontWeight: "bold",
-                  backgroundColor: "primary.main",
-                  textAlign: "center",
-                  borderRight: "2px solid rgba(255,255,255,0.5)",
-                  fontSize: "0.75rem", 
-                  height: "32px", 
-                  padding: "4px 8px", 
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  position: "sticky",
-                  left: 0,
-                  zIndex: 1200,
-                }}
-              >
-                Excel View
-              </TableCell>
               {allColumns.map((column) => (
                 <TableCell
                   key={column}
                   sx={{
-                    color: "white",
+                    color: "black",
                     fontWeight: "bold",
-                    backgroundColor: "primary.main",
-                    textAlign: "center",
-                    borderLeft: "1px solid rgba(255,255,255,0.3)",
+                    backgroundColor: "rgba(204, 203, 203, 1)",
+                    textAlign: "left",
+                    borderLeft: "1px solid rgba(255, 255, 255, 0.3)",
                     borderRight: "1px solid rgba(255,255,255,0.3)",
-                    fontSize: "0.75rem", 
-                    height: "32px", 
-                    padding: "4px 8px", 
+                    fontSize: "0.7rem", 
+                    height: "20px", 
+                    padding: "2px 6px", 
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -124,34 +104,14 @@ const ExcelView: React.FC<ExcelViewProps> = ({
                   height: "32px", 
                 }}
               >
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    backgroundColor: "primary.light",
-                    color: "white",
-                    borderRight: "1px solid #e0e0e0",
-                    fontSize: "0.75rem", 
-                    height: "32px", 
-                    padding: "4px 8px", 
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    position: "sticky",
-                    left: 0,
-                    zIndex: 1100,
-                    minWidth: "auto", 
-                  }}
-                >
-                  {page * rowsPerPage + index + 1}
-                </TableCell>
                 {allColumns.map((column) => (
                   <TableCell
                     key={column}
                     sx={{
                       borderRight: "1px solid #e0e0e0",
-                      fontSize: "0.75rem", 
-                      height: "32px", 
-                      padding: "4px 8px", 
+                      fontSize: "0.7rem", 
+                      height: "20px", 
+                      padding: "2px 6px", 
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -168,7 +128,7 @@ const ExcelView: React.FC<ExcelViewProps> = ({
       </TableContainer>
 
       <Paper 
-        elevation={0}
+        elevation={4}
         sx={{ 
           borderTop: "1px solid #e0e0e0",
           backgroundColor: "white",

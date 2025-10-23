@@ -59,11 +59,22 @@ interface FieldZonesProps {
   draggedField: string | null;
   onDragStart: (field: string, fromZone: string) => void;
   onDragOver: (e: DragEvent) => void;
-  onDrop: (zone: "rows" | "columns" | "values", field?: string, fromZone?: string) => void;
+  onDrop: (
+    zone: "rows" | "columns" | "values",
+    field?: string,
+    fromZone?: string
+  ) => void;
   onRemoveField: (zone: "rows" | "columns" | "values", field: string) => void;
   onClearZone: (zone: "rows" | "columns" | "values" | "all") => void;
-  onUpdateValueAggregation: (field: string, aggregation: AggregationType) => void;
-  onFieldMove: (fromZone: "rows" | "columns" | "values", toZone: "rows" | "columns" | "values", field: string) => void;
+  onUpdateValueAggregation: (
+    field: string,
+    aggregation: AggregationType
+  ) => void;
+  onFieldMove: (
+    fromZone: "rows" | "columns" | "values",
+    toZone: "rows" | "columns" | "values",
+    field: string
+  ) => void;
 }
 
 // ----------------------------- FIELD ZONE -----------------------------
@@ -112,8 +123,17 @@ const FieldZone: React.FC<FieldZoneProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}>
-        <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: "0.7rem" }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}
+      >
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ fontSize: "0.65rem" }}
+        >
           {label}
         </Typography>
         {fields.length > 0 && (
@@ -129,7 +149,10 @@ const FieldZone: React.FC<FieldZoneProps> = ({
           flex: 1,
           overflow: "auto",
           "&::-webkit-scrollbar": { width: "2px", height: "2px" },
-          "&::-webkit-scrollbar-track": { background: "#f5f5f5", borderRadius: "2px" },
+          "&::-webkit-scrollbar-track": {
+            background: "#f5f5f5",
+            borderRadius: "2px",
+          },
           "&::-webkit-scrollbar-thumb": {
             background: "#c1c1c1",
             borderRadius: "2px",
@@ -140,25 +163,44 @@ const FieldZone: React.FC<FieldZoneProps> = ({
         }}
       >
         {fields.length === 0 ? (
-          <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Typography variant="caption" color="text.secondary" fontStyle="italic">
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontStyle="italic"
+              fontSize="0.6rem"
+            >
               Drop fields here
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: "min-content" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              minWidth: "min-content",
+            }}
+          >
             {fields.map((field) => (
               <Box key={field} sx={{ display: "flex", width: "fit-content" }}>
                 <Chip
                   label={field}
                   icon={<DragIndicator />}
-                  color={zoneType === "values" ? "primary" : "success"}
+                  color= "primary"
                   size="small"
                   onDelete={() => onRemoveField(field)}
                   sx={{
                     cursor: "grab",
                     "&:active": { cursor: "grabbing" },
-                    height: 18,
+                    height: 15,
                     fontSize: 10,
                     padding: "0 6px",
                     "& .MuiChip-deleteIcon": { width: 16, height: 16 },
@@ -182,7 +224,11 @@ const FieldZone: React.FC<FieldZoneProps> = ({
 };
 
 // ----------------------------- DRAGGABLE FIELD -----------------------------
-const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fromZone }) => {
+const DraggableField: React.FC<DraggableFieldProps> = ({
+  field,
+  onDragStart,
+  fromZone,
+}) => {
   const handleDragStart = (e: DragEvent) => {
     e.dataTransfer.setData("text/plain", field);
     e.dataTransfer.setData("fromZone", fromZone);
@@ -194,7 +240,7 @@ const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fro
       draggable
       onDragStart={handleDragStart}
       label={field}
-      color="secondary"
+      color="primary"
       size="small"
       icon={<DragIndicator />}
       sx={{
@@ -202,7 +248,7 @@ const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fro
         "&:active": { cursor: "grabbing" },
         transition: "all 0.2s",
         "&:hover": { transform: "scale(1.05)" },
-        height: 18,
+        height: 15,
         fontSize: 10,
         padding: "0 6px",
         "& .MuiChip-deleteIcon": { width: 16, height: 16 },
@@ -223,7 +269,8 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => setAnchorEl(event.currentTarget);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleAggregationChange = (aggregation: AggregationType) => {
     onChange(valueField.field, aggregation);
@@ -247,7 +294,34 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   return (
     <div>
       <Chip
-        label={`${valueField.field} (${valueField.aggregation}) ▼`}
+        label={
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <span>
+              {valueField.field} ({valueField.aggregation})
+            </span>
+            <IconButton
+              size="small"
+              sx={{
+                width: 16,
+                height: 16,
+                cursor: "pointer",
+                padding: 0,
+                margin: 0,
+                minWidth: "auto",
+                color: "inherit",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                },
+              }}
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                event.stopPropagation();
+                handleClick(event);
+              }}
+            >
+              <ArrowDropDown fontSize="small" sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Box>
+        }
         icon={<DragIndicator />}
         color="primary"
         size="small"
@@ -255,14 +329,18 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
         sx={{
           cursor: "grab",
           "&:active": { cursor: "grabbing" },
-          height: 18,
+          height: 15, // Slightly increased to accommodate the button
           fontSize: 10,
-          padding: "0 6px",
+          padding: "0 4px",
           "& .MuiChip-deleteIcon": { width: 16, height: 16 },
           width: "fit-content",
           flexShrink: 0,
+          "& .MuiChip-label": {
+            padding: "0 4px",
+            cursor: "grab",
+            "&:active": { cursor: "grabbing" },
+          },
         }}
-        onClick={handleClick}
         onDragStart={handleDragStart}
         draggable
       />
@@ -278,6 +356,7 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
             key={key}
             onClick={() => handleAggregationChange(key as AggregationType)}
             selected={valueField.aggregation === key}
+            sx={{ cursor: "pointer" }}
           >
             {label}
           </MenuItem>
@@ -304,11 +383,18 @@ const FieldZones: React.FC<FieldZonesProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredAvailableFields = useMemo(
-    () => availableFields.filter((field) => field.toLowerCase().includes(searchTerm.toLowerCase())),
+    () =>
+      availableFields.filter((field) =>
+        field.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
     [availableFields, searchTerm]
   );
 
-  const handleFieldDrop = (zone: "rows" | "columns" | "values", field?: string, fromZone?: string) => {
+  const handleFieldDrop = (
+    zone: "rows" | "columns" | "values",
+    field?: string,
+    fromZone?: string
+  ) => {
     if (field) onDrop(zone, field, fromZone);
   };
 
@@ -316,20 +402,25 @@ const FieldZones: React.FC<FieldZonesProps> = ({
     if (draggedField) onDrop(zone);
   };
 
-  const handleFieldDragStart = (field: string, fromZone: string) => onDragStart(field, fromZone);
+  const handleFieldDragStart = (field: string, fromZone: string) =>
+    onDragStart(field, fromZone);
 
   return (
     <Paper
       sx={{
-        height: "80%",
+        height: "99%",
         pl: 2,
         pr: 2,
-        minHeight: 500,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         overflow: "hidden",
-        width: "90%",
+        width: "85%",
+        boxShadow:
+          "0px 2px 4px rgba(0,0,0,0.2), \
+           0px -2px 4px rgba(0,0,0,0.2), \
+           2px 0px 4px rgba(0,0,0,0.2), \
+           -2px 0px 4px rgba(0,0,0,0.2)",
       }}
     >
       <TextField
@@ -340,6 +431,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         onChange={(e) => setSearchTerm(e.target.value)}
         sx={{
           mb: 1,
+          mt:1,
           flexShrink: 0,
           "& .MuiInputBase-root": { height: 24, minHeight: 24, fontSize: 10 },
           "& .MuiInputBase-input": { padding: "2px 8px" },
@@ -354,7 +446,11 @@ const FieldZones: React.FC<FieldZonesProps> = ({
       />
 
       <Box sx={{ mb: 1, flexShrink: 0 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontSize: "0.7rem", fontWeight: "bold" }}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ fontSize: "0.7rem", fontWeight: "bold" }}
+        >
           AVAILABLE FIELDS
         </Typography>
         <Box
@@ -369,15 +465,40 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           }}
         >
           {filteredAvailableFields.length === 0 ? (
-            <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Typography variant="caption" color="text.secondary" fontStyle="italic">
+            <Box
+              sx={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontStyle="italic"
+                fontSize="0.65rem"
+              >
                 No fields available
               </Typography>
             </Box>
           ) : (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, width: "fit-content", minWidth: "100%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1,
+                width: "fit-content",
+                minWidth: "100%",
+              }}
+            >
               {filteredAvailableFields.map((f) => (
-                <DraggableField key={f} field={f} onDragStart={handleFieldDragStart} fromZone="available" />
+                <DraggableField
+                  key={f}
+                  field={f}
+                  onDragStart={handleFieldDragStart}
+                  fromZone="available"
+                />
               ))}
             </Box>
           )}
@@ -385,30 +506,46 @@ const FieldZones: React.FC<FieldZonesProps> = ({
       </Box>
 
       <Box sx={{ mb: 1, flexShrink: 0 }}>
-        <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: "0.7rem" }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ fontSize: "0.7rem" }}
+        >
           GROUP FIELDS
         </Typography>
-        <Box sx={{ display: "flex", gap: 1, minHeight: 100 }}>
-          <Box sx={{ flex: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            minHeight: 100,
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ maxWidth: "50%" }}>
             <FieldZone
               label="Row Fields"
               fields={rows}
               onRemoveField={(f) => onRemoveField("rows", f)}
               onClearAll={() => onClearZone("rows")}
               zoneId="rows"
-              onFieldDrop={(field, fromZone) => handleFieldDrop("rows", field, fromZone)}
+              onFieldDrop={(field, fromZone) =>
+                handleFieldDrop("rows", field, fromZone)
+              }
               onFieldDragStart={handleFieldDragStart}
               zoneType="rows"
             />
           </Box>
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ maxWidth: "50%" }}>
             <FieldZone
               label="Column Fields"
               fields={columns}
               onRemoveField={(f) => onRemoveField("columns", f)}
               onClearAll={() => onClearZone("columns")}
               zoneId="columns"
-              onFieldDrop={(field, fromZone) => handleFieldDrop("columns", field, fromZone)}
+              onFieldDrop={(field, fromZone) =>
+                handleFieldDrop("columns", field, fromZone)
+              }
               onFieldDragStart={handleFieldDragStart}
               zoneType="columns"
             />
@@ -416,8 +553,13 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         </Box>
       </Box>
 
-      <Box sx={{ flex: 1, minHeight: 100, flexShrink: 0 }}>
-        <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: "0.7rem" }}>
+      <Box sx={{ mb: 1, flexShrink: 0 }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ fontSize: "0.7rem" }}
+        >
           AGGREGATION FIELDS
         </Typography>
         <Box
@@ -434,14 +576,23 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           onDragOver={onDragOver}
           onDrop={() => handleZoneDrop("values")}
         >
-          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}>
-            <Typography variant="subtitle2" fontWeight="bold" sx={{ color: "black", fontSize: "0.7rem" }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}
+          >
+            <Typography
+              variant="subtitle2"
+              fontWeight="bold"
+              sx={{ color: "black", fontSize: "0.7rem" }}
+            >
               Value Fields
             </Typography>
             {values.length > 0 && (
               <Tooltip title="Clear all values">
                 <IconButton size="small" onClick={() => onClearZone("values")}>
-                  <Clear fontSize="small" />
+                  <Clear fontSize="small" sx={{ fontSize: 12 }}/>
                 </IconButton>
               </Tooltip>
             )}
@@ -451,19 +602,44 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               flex: 1,
               overflow: "auto",
               "&::-webkit-scrollbar": { width: "2px", height: "2px" },
-              "&::-webkit-scrollbar-thumb": { background: "#c1c1c1", "&:hover": { background: "#a8a8a8" } },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#c1c1c1",
+                "&:hover": { background: "#a8a8a8" },
+              },
             }}
           >
             {values.length === 0 ? (
-              <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Typography variant="caption" color="text.secondary" fontStyle="italic">
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontStyle="italic"
+                  fontSize="0.65rem"
+                >
                   Drop fields here
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: "min-content" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  minWidth: "min-content",
+                }}
+              >
                 {values.map((valueField) => (
-                  <Box key={valueField.field} sx={{ display: "flex", width: "fit-content" }}>
+                  <Box
+                    key={valueField.field}
+                    sx={{ display: "flex", width: "fit-content" }}
+                  >
                     <ValueFieldWithAggregation
                       valueField={valueField}
                       onChange={onUpdateValueAggregation}
