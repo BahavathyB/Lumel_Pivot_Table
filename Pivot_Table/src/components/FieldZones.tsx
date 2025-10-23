@@ -66,6 +66,7 @@ interface FieldZonesProps {
   onFieldMove: (fromZone: "rows" | "columns" | "values", toZone: "rows" | "columns" | "values", field: string) => void;
 }
 
+// ----------------------------- FIELD ZONE -----------------------------
 const FieldZone: React.FC<FieldZoneProps> = ({
   label,
   fields,
@@ -90,9 +91,7 @@ const FieldZone: React.FC<FieldZoneProps> = ({
     e.currentTarget.style.backgroundColor = "#f8f9fa";
     const field = e.dataTransfer.getData("text/plain");
     const fromZone = e.dataTransfer.getData("fromZone");
-    if (field) {
-      onFieldDrop(field, fromZone);
-    }
+    if (field) onFieldDrop(field, fromZone);
   };
 
   return (
@@ -113,21 +112,8 @@ const FieldZone: React.FC<FieldZoneProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{
-          backgroundColor: "white",
-          flexShrink: 0,
-          minHeight: 24,
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          fontWeight="bold"
-          sx={{ fontSize: "0.7rem" }}
-        >
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}>
+        <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: "0.7rem" }}>
           {label}
         </Typography>
         {fields.length > 0 && (
@@ -177,7 +163,6 @@ const FieldZone: React.FC<FieldZoneProps> = ({
                     padding: "0 6px",
                     "& .MuiChip-deleteIcon": { width: 16, height: 16 },
                     width: "fit-content",
-                    maxWidth: "none",
                     flexShrink: 0,
                   }}
                   draggable
@@ -196,6 +181,7 @@ const FieldZone: React.FC<FieldZoneProps> = ({
   );
 };
 
+// ----------------------------- DRAGGABLE FIELD -----------------------------
 const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fromZone }) => {
   const handleDragStart = (e: DragEvent) => {
     e.dataTransfer.setData("text/plain", field);
@@ -226,6 +212,7 @@ const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fro
   );
 };
 
+// ----------------------------- VALUE FIELD WITH AGGREGATION -----------------------------
 const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   valueField,
   onChange,
@@ -235,17 +222,20 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleAggregationChange = (aggregation: AggregationType) => {
     onChange(valueField.field, aggregation);
     handleClose();
   };
+
   const handleDragStart = (e: DragEvent) => {
     e.dataTransfer.setData("text/plain", valueField.field);
     e.dataTransfer.setData("fromZone", fromZone);
     onDragStart(valueField.field, fromZone);
   };
+
   const aggregationLabels: Record<AggregationType, string> = {
     sum: "Sum",
     avg: "Average",
@@ -270,7 +260,6 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
           padding: "0 6px",
           "& .MuiChip-deleteIcon": { width: 16, height: 16 },
           width: "fit-content",
-          maxWidth: "none",
           flexShrink: 0,
         }}
         onClick={handleClick}
@@ -285,7 +274,11 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         {Object.entries(aggregationLabels).map(([key, label]) => (
-          <MenuItem key={key} onClick={() => handleAggregationChange(key as AggregationType)} selected={valueField.aggregation === key}>
+          <MenuItem
+            key={key}
+            onClick={() => handleAggregationChange(key as AggregationType)}
+            selected={valueField.aggregation === key}
+          >
             {label}
           </MenuItem>
         ))}
@@ -294,6 +287,7 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   );
 };
 
+// ----------------------------- MAIN FIELD ZONES -----------------------------
 const FieldZones: React.FC<FieldZonesProps> = ({
   availableFields,
   rows,
@@ -306,23 +300,38 @@ const FieldZones: React.FC<FieldZonesProps> = ({
   onRemoveField,
   onClearZone,
   onUpdateValueAggregation,
-  onFieldMove,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+
   const filteredAvailableFields = useMemo(
     () => availableFields.filter((field) => field.toLowerCase().includes(searchTerm.toLowerCase())),
     [availableFields, searchTerm]
   );
+
   const handleFieldDrop = (zone: "rows" | "columns" | "values", field?: string, fromZone?: string) => {
     if (field) onDrop(zone, field, fromZone);
   };
+
   const handleZoneDrop = (zone: "rows" | "columns" | "values") => {
     if (draggedField) onDrop(zone);
   };
+
   const handleFieldDragStart = (field: string, fromZone: string) => onDragStart(field, fromZone);
 
   return (
-    <Paper sx={{ height: "80%", pl: 2, pr: 2, minHeight: 500, display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", width: "90%" }}>
+    <Paper
+      sx={{
+        height: "80%",
+        pl: 2,
+        pr: 2,
+        minHeight: 500,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        overflow: "hidden",
+        width: "90%",
+      }}
+    >
       <TextField
         fullWidth
         size="small"
@@ -334,7 +343,6 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           flexShrink: 0,
           "& .MuiInputBase-root": { height: 24, minHeight: 24, fontSize: 10 },
           "& .MuiInputBase-input": { padding: "2px 8px" },
-          "& .MuiInputAdornment-root": { marginRight: 4 },
         }}
         InputProps={{
           startAdornment: (
@@ -352,17 +360,12 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         <Box
           sx={{
             height: 100,
-            minHeight: 100,
             overflow: "auto",
             p: 1,
             border: "1.5px dashed #e0e0e0",
             borderRadius: 1,
             backgroundColor: "white",
             "&::-webkit-scrollbar": { width: "4px", height: "4px" },
-            "&::-webkit-scrollbar-track": { background: "#f5f5f5", borderRadius: "2px" },
-            "&::-webkit-scrollbar-thumb": { background: "#c1c1c1", borderRadius: "2px", "&:hover": { background: "#a8a8a8" } },
-            scrollbarWidth: "thin",
-            scrollbarColor: "#c1c1c1 #f5f5f5",
           }}
         >
           {filteredAvailableFields.length === 0 ? (
@@ -386,7 +389,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           GROUP FIELDS
         </Typography>
         <Box sx={{ display: "flex", gap: 1, minHeight: 100 }}>
-          <Box sx={{ flex: 1, minWidth: 0, backgroundColor: "white" }}>
+          <Box sx={{ flex: 1 }}>
             <FieldZone
               label="Row Fields"
               fields={rows}
@@ -398,7 +401,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               zoneType="rows"
             />
           </Box>
-          <Box sx={{ flex: 1, minWidth: 0, backgroundColor: "white" }}>
+          <Box sx={{ flex: 1 }}>
             <FieldZone
               label="Column Fields"
               fields={columns}
@@ -422,11 +425,8 @@ const FieldZones: React.FC<FieldZonesProps> = ({
             p: 1,
             mb: 2,
             height: 100,
-            minHeight: 100,
             border: "1.5px dashed #ccc",
             backgroundColor: "white",
-            position: "relative",
-            overflow: "hidden",
             display: "flex",
             flexDirection: "column",
           }}
@@ -451,10 +451,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               flex: 1,
               overflow: "auto",
               "&::-webkit-scrollbar": { width: "2px", height: "2px" },
-              "&::-webkit-scrollbar-track": { background: "#f5f5f5", borderRadius: "2px" },
-              "&::-webkit-scrollbar-thumb": { background: "#c1c1c1", borderRadius: "2px", "&:hover": { background: "#a8a8a8" } },
-              scrollbarWidth: "thin",
-              scrollbarColor: "#c1c1c1 #f5f5f5",
+              "&::-webkit-scrollbar-thumb": { background: "#c1c1c1", "&:hover": { background: "#a8a8a8" } },
             }}
           >
             {values.length === 0 ? (

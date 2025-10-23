@@ -92,12 +92,15 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
   onPageChange,
   onRowsPerPageChange,
 }) => {
+  // -------------------- TABLE STYLING CONSTANTS --------------------
   const cellHeight = 30;
   const cellHeightPx = "30px";
   const fontSize = "0.75rem";
-  const padding = "4px 8px";
-  const greyBorder = "1px solid #aeadadff";
+  const padding = "2px 8px";
+  const greyBorder = "0.5px solid rgba(0, 0, 0, 0.2)";
+  const whiteBorder = "0.5px solid white";
 
+  // -------------------- AGGREGATION CALCULATION --------------------
   const calculateAggregation = (
     data: CSVRow[],
     valueField: ValueField
@@ -163,6 +166,104 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
     }
   };
 
+  // -------------------- GRAND TOTAL CALCULATION --------------------
+  const calculateGrandTotal = () => {
+    const grandTotalData: Record<string, string> = {};
+
+    finalColumns.forEach(({ key, colKey, valueField }) => {
+      const aggKey = `${valueField.field}_${valueField.aggregation}`;
+      const columnValues: number[] = [];
+
+      flatRowData.forEach((rowData) => {
+        if (!rowData.isSubtotal) {
+          const val = pivotData[rowData.key]?.[colKey]?.[aggKey];
+          if (val && val !== "" && val !== "-") {
+            const num = parseFloat(val);
+            if (!isNaN(num)) {
+              columnValues.push(num);
+            }
+          }
+        }
+      });
+
+      if (columnValues.length > 0) {
+        grandTotalData[key] = columnValues
+          .reduce((sum, val) => sum + val, 0)
+          .toString();
+      } else {
+        grandTotalData[key] = "";
+      }
+    });
+
+    return grandTotalData;
+  };
+
+  const grandTotalData = calculateGrandTotal();
+
+  // -------------------- GRAND TOTAL ROW RENDER --------------------
+  const renderGrandTotalRow = (stickyTop: number) => {
+    if (rows.length === 0 || values.length === 0) {
+      return null;
+    }
+
+    return (
+      <TableRow
+        sx={{
+          position: "sticky",
+          top: `${stickyTop}px`,
+          zIndex: 88,
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <TableCell
+          colSpan={rows.length > 0 ? rows.length : 1}
+          sx={{
+            fontWeight: "bold",
+            fontSize,
+            height: cellHeightPx,
+            padding,
+            verticalAlign: "middle",
+            textAlign: "center",
+            backgroundColor: "#a5f6ccff",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            borderLeft: greyBorder,
+            borderBottom: greyBorder,
+          }}
+        >
+          Grand Total
+        </TableCell>
+
+        {finalColumns.map(({ key }) => {
+          const val = grandTotalData[key] || "";
+
+          return (
+            <TableCell
+              key={`grand-total-${key}`}
+              align="center"
+              sx={{
+                fontWeight: "bold",
+                backgroundColor: "#a5f6ccff",
+                fontSize,
+                height: cellHeightPx,
+                padding,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                borderLeft: greyBorder,
+                borderBottom: greyBorder,
+              }}
+            >
+              {val}
+            </TableCell>
+          );
+        })}
+      </TableRow>
+    );
+  };
+
+  // -------------------- PIVOT TABLE ROWS RENDER --------------------
   const renderPivotTableRows = (): JSX.Element[] => {
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
       const totalRowData: Record<string, string> = {};
@@ -184,16 +285,16 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 key={`${valueField.field}-${valueField.aggregation}`}
                 align="center"
                 sx={{
-                  fontWeight: "bold",
-                  borderRight: greyBorder,
-                  borderBottom: greyBorder,
-                  backgroundColor: "#e0e0e0",
+                  fontWeight: "normal",
+                  backgroundColor: "#f5f5f5",
                   fontSize,
                   height: cellHeightPx,
                   padding,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  borderLeft: greyBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {val}
@@ -206,52 +307,70 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
 
     return paginatedFlatRowData.map((rowData, rowIndex) => {
       const isSubtotalRow = rowData.isSubtotal === true;
+      const subtotalLevel = rowData.subtotalLevel ?? 0;
 
       return (
         <TableRow
           key={rowData.key}
           sx={{
-            backgroundColor: isSubtotalRow ? "#e0e0e0" : "inherit",
+            backgroundColor: isSubtotalRow ? "#f5f5f5" : "inherit",
           }}
         >
           {rows.map((_, levelIndex) => {
             if (isSubtotalRow) {
-              if (levelIndex < (rowData.subtotalLevel ?? 0)) {
+              if (levelIndex < subtotalLevel) {
+                const levelMap = rowSpanMap.get(levelIndex);
+                const spanInfo = levelMap?.get(rowIndex);
+
+                if (!spanInfo || spanInfo.rowIndex !== rowIndex) {
+                  return null;
+                }
+
                 return (
                   <TableCell
-                    key={`${rowData.key}-empty-subtotal-${levelIndex}`}
+                    key={`${rowData.key}-lvl-${levelIndex}`}
+                    rowSpan={spanInfo.rowSpan}
                     sx={{
-                      borderRight: greyBorder,
+                      fontWeight: "normal",
+                      fontSize,
+                      height: cellHeightPx,
+                      padding,
+                      verticalAlign: "middle",
+                      textAlign: "center",
+                      backgroundColor: "white",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      borderLeft: greyBorder,
                       borderBottom: greyBorder,
-                      backgroundColor: "#e0e0e0",
-                      padding: 0,
-                      margin: 0,
-                      width: 0,
-                      minWidth: 0,
                     }}
-                  />
+                  >
+                    {spanInfo.value}
+                  </TableCell>
                 );
-              } else if (levelIndex === rowData.subtotalLevel) {
+              } else if (levelIndex === subtotalLevel) {
+                const colSpanCount = rows.length - subtotalLevel;
                 return (
                   <TableCell
-                    key={`${rowData.key}-subtotal`}
-                    colSpan={rows.length - levelIndex}
+                    key={`${rowData.key}-subtotal-merged`}
+                    colSpan={colSpanCount}
                     sx={{
-                      borderRight: greyBorder,
-                      borderBottom: greyBorder,
                       fontWeight: "bold",
                       fontSize,
                       height: cellHeightPx,
                       padding,
                       verticalAlign: "middle",
                       textAlign: "left",
-                      backgroundColor: "#e0e0e0",
+                      paddingLeft: `${(subtotalLevel + 1) * 16}px`,
+                      backgroundColor: "#f5f5f5",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
+                      borderLeft: greyBorder,
+                      borderBottom: greyBorder,
                     }}
                   >
-                    Total {rowData.values[levelIndex]}
+                    Total {rowData.values[subtotalLevel]}
                   </TableCell>
                 );
               } else {
@@ -271,9 +390,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 key={`${rowData.key}-lvl-${levelIndex}`}
                 rowSpan={spanInfo.rowSpan}
                 sx={{
-                  borderRight: greyBorder,
-                  borderBottom: greyBorder,
-                  fontWeight: "bold",
+                  fontWeight: "normal",
                   fontSize,
                   height: cellHeightPx,
                   padding,
@@ -283,6 +400,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  borderLeft: greyBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {spanInfo.value}
@@ -299,16 +418,16 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 key={key}
                 align="center"
                 sx={{
-                  fontWeight: "bold",
-                  borderRight: greyBorder,
-                  borderBottom: greyBorder,
-                  backgroundColor: isSubtotalRow ? "#e0e0e0" : "inherit",
+                  fontWeight: isSubtotalRow ? "bold" : "normal",
+                  backgroundColor: isSubtotalRow ? "#f5f5f5" : "inherit",
                   fontSize,
                   height: cellHeightPx,
                   padding,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  borderLeft: greyBorder,
+                  borderBottom: greyBorder,
                 }}
               >
                 {val}
@@ -320,6 +439,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
     });
   };
 
+  // -------------------- PIVOT TABLE HEADERS RENDER --------------------
   const renderPivotTableHeaders = () => {
     const collectByLevel = (
       nodes: NestedColumnData[],
@@ -344,91 +464,106 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
 
     if (rows.length > 0 && columns.length === 0 && values.length === 0) {
       return (
-        <TableRow>
-          {rows.map((fieldName, idx) => (
-            <TableCell
-              key={`row-header-${idx}`}
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                backgroundColor: "primary.main",
-                borderRight: greyBorder,
-                borderBottom: greyBorder,
-                textAlign: "center",
-                verticalAlign: "middle",
-                whiteSpace: "nowrap",
-                fontSize,
-                height: cellHeightPx,
-                padding,
-                minWidth: "auto",
-                maxWidth: "auto",
-                width: "auto",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {fieldName}
-            </TableCell>
-          ))}
-        </TableRow>
+        <>
+          <TableRow>
+            {rows.map((fieldName, idx) => (
+              <TableCell
+                key={`row-header-${idx}`}
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  backgroundColor: "primary.main",
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  whiteSpace: "nowrap",
+                  fontSize,
+                  height: cellHeightPx,
+                  padding,
+                  minWidth: "auto",
+                  maxWidth: "auto",
+                  width: "auto",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 90,
+                  borderLeft: whiteBorder,
+                  borderTop: greyBorder,
+                  borderBottom: greyBorder,
+                }}
+              >
+                {fieldName}
+              </TableCell>
+            ))}
+          </TableRow>
+        </>
       );
     }
 
     if (rows.length > 0 && columns.length === 0 && values.length > 0) {
       return (
-        <TableRow>
-          {rows.map((fieldName, idx) => (
-            <TableCell
-              key={`row-header-${idx}`}
-              rowSpan={2}
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                backgroundColor: "primary.main",
-                borderRight: greyBorder,
-                borderBottom: greyBorder,
-                textAlign: "center",
-                verticalAlign: "middle",
-                whiteSpace: "nowrap",
-                fontSize,
-                height: `${cellHeight * 2}px`,
-                padding,
-                minWidth: "auto",
-                maxWidth: "auto",
-                width: "auto",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {fieldName}
-            </TableCell>
-          ))}
-          {values.map((valueField, idx) => (
-            <TableCell
-              key={`value-header-${idx}`}
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                textAlign: "center",
-                borderLeft: greyBorder,
-                borderRight: greyBorder,
-                borderBottom: greyBorder,
-                backgroundColor: "primary.dark",
-                whiteSpace: "nowrap",
-                fontSize,
-                height: cellHeightPx,
-                padding,
-                minWidth: "auto",
-                maxWidth: "auto",
-                width: "auto",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {valueField.aggregation.toUpperCase()} ({valueField.field})
-            </TableCell>
-          ))}
-        </TableRow>
+        <>
+          <TableRow>
+            {rows.map((fieldName, idx) => (
+              <TableCell
+                key={`row-header-${idx}`}
+                rowSpan={totalHeaderRows}
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  backgroundColor: "primary.main",
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  whiteSpace: "nowrap",
+                  fontSize,
+                  height: cellHeightPx,
+                  padding,
+                  minWidth: "auto",
+                  maxWidth: "auto",
+                  width: "auto",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 90,
+                  borderLeft: whiteBorder,
+                  borderTop: greyBorder,
+                  borderBottom: greyBorder,
+                }}
+              >
+                {fieldName}
+              </TableCell>
+            ))}
+            {values.map((valueField, idx) => (
+              <TableCell
+                key={`value-header-${idx}`}
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  backgroundColor: "primary.light",
+                  whiteSpace: "nowrap",
+                  fontSize,
+                  height: cellHeightPx,
+                  padding,
+                  minWidth: "auto",
+                  maxWidth: "auto",
+                  width: "auto",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 90,
+                  borderLeft: whiteBorder,
+                  borderBottom: whiteBorder,
+                }}
+              >
+                {valueField.aggregation.toUpperCase()} ({valueField.field})
+              </TableCell>
+            ))}
+          </TableRow>
+          {renderGrandTotalRow(cellHeight)}
+        </>
       );
     }
 
@@ -445,8 +580,6 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 color: "white",
                 fontWeight: "bold",
                 backgroundColor: "primary.main",
-                borderRight: greyBorder,
-                borderBottom: greyBorder,
                 textAlign: "center",
                 verticalAlign: "middle",
                 whiteSpace: "nowrap",
@@ -458,6 +591,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 width: "auto",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
+                position: "sticky",
+                top: 0,
+                zIndex: 90,
+                borderLeft: whiteBorder,
+                borderTop: greyBorder,
+                borderBottom: greyBorder,
               }}
             >
               {fieldName}
@@ -474,9 +613,6 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   color: "white",
                   fontWeight: "bold",
                   textAlign: "center",
-                  borderLeft: greyBorder,
-                  borderRight: greyBorder,
-                  borderBottom: greyBorder,
                   backgroundColor: "primary.main",
                   whiteSpace: "nowrap",
                   fontSize,
@@ -493,6 +629,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   top: 0,
                   zIndex: 90,
                   boxSizing: "border-box",
+                  borderLeft: whiteBorder,
+                  borderTop: greyBorder,
+                  borderBottom: whiteBorder,
                 }}
               >
                 {node.value}
@@ -505,9 +644,6 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 color: "white",
                 fontWeight: "bold",
                 textAlign: "center",
-                borderLeft: greyBorder,
-                borderRight: greyBorder,
-                borderBottom: greyBorder,
                 backgroundColor: "primary.main",
                 whiteSpace: "nowrap",
                 fontSize,
@@ -518,6 +654,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 minWidth: "auto",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
+                position: "sticky",
+                top: 0,
+                zIndex: 90,
+                borderLeft: whiteBorder,
+                borderTop: greyBorder,
+                borderBottom: whiteBorder,
               }}
             >
               Values
@@ -536,10 +678,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   color: "white",
                   fontWeight: "bold",
                   textAlign: "center",
-                  borderLeft: greyBorder,
-                  borderRight: greyBorder,
-                  borderBottom: greyBorder,
-                  backgroundColor: "primary.light",
+                  backgroundColor: "primary.main",
                   whiteSpace: "nowrap",
                   fontSize,
                   height: cellHeightPx,
@@ -555,6 +694,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   top: cellHeight * (levelIndex + 1),
                   zIndex: 89 - levelIndex,
                   boxSizing: "border-box",
+                  borderLeft: whiteBorder,
+                  borderBottom: whiteBorder,
                 }}
               >
                 {node.value}
@@ -574,10 +715,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                         color: "white",
                         fontWeight: "bold",
                         textAlign: "center",
-                        borderLeft: greyBorder,
-                        borderRight: greyBorder,
-                        borderBottom: greyBorder,
-                        backgroundColor: "primary.dark",
+                        backgroundColor: "primary.light",
                         whiteSpace: "nowrap",
                         fontSize,
                         height: cellHeightPx,
@@ -593,6 +731,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                         top: cellHeight * levels.length,
                         zIndex: 85,
                         boxSizing: "border-box",
+                        borderLeft: whiteBorder,
+                        borderBottom: whiteBorder,
                       }}
                     >
                       {valueField.aggregation.toUpperCase()} ({valueField.field}
@@ -607,10 +747,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                       color: "white",
                       fontWeight: "bold",
                       textAlign: "center",
-                      borderLeft: greyBorder,
-                      borderRight: greyBorder,
-                      borderBottom: greyBorder,
-                      backgroundColor: "primary.dark",
+                      backgroundColor: "primary.light",
                       whiteSpace: "nowrap",
                       fontSize,
                       height: cellHeightPx,
@@ -626,6 +763,8 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                       top: 0,
                       zIndex: 85,
                       boxSizing: "border-box",
+                      borderLeft: whiteBorder,
+                      borderBottom: whiteBorder,
                     }}
                   >
                     {valueField.aggregation.toUpperCase()} ({valueField.field})
@@ -633,6 +772,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                 ))}
           </TableRow>
         )}
+        {renderGrandTotalRow(cellHeight * totalHeaderRows)}
       </>
     );
   };
@@ -640,6 +780,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <TableContainer
+        component={Paper}
         sx={{
           flex: 1,
           maxHeight: "calc(100% - 52px)",
@@ -647,6 +788,13 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
           overflow: "auto",
           "& .MuiTable-root": {
             tableLayout: "auto",
+            borderCollapse: "separate",
+            borderSpacing: 0,
+          },
+          "& .MuiTableHead-root": {
+            position: "sticky",
+            top: 0,
+            zIndex: 100,
           },
           "&::-webkit-scrollbar": {
             width: "6px",
@@ -671,13 +819,18 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         }}
       >
         <Table
-          sx={{ position: "relative", tableLayout: "auto", minWidth: "100%" }}
+          sx={{
+            position: "relative",
+            tableLayout: "auto",
+            minWidth: "100%",
+            borderSpacing: 0,
+          }}
         >
           <TableHead
             sx={{
               position: "sticky",
               top: 0,
-              zIndex: 89,
+              zIndex: 100,
               display: "table-header-group",
             }}
           >

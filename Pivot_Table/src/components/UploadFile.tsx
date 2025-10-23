@@ -6,14 +6,11 @@ import { useDispatch } from "react-redux";
 import { setCsvData } from "../store/csvSlice";
 
 const UploadFile: React.FC = () => {
-  const [fileName, setFileName] = useState<string | null>(null);
   const dispatch = useDispatch();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setFileName(file.name);
 
     Papa.parse(file, {
       header: true,
@@ -64,12 +61,6 @@ const UploadFile: React.FC = () => {
         Choose CSV File
         <input type="file" accept=".csv" hidden onChange={handleFileChange} />
       </Button>
-
-      {fileName && (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Selected File: <strong>{fileName}</strong>
-        </Typography>
-      )}
     </Box>
   );
 };
