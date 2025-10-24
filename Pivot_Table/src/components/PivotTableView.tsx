@@ -72,6 +72,7 @@ interface PivotTableViewProps {
   leafColumnKeys: string[];
   page: number;
   rowsPerPage: number;
+  totalNonSubtotalRows: number;
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -89,6 +90,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
   leafColumnKeys,
   page,
   rowsPerPage,
+  totalNonSubtotalRows,
   onPageChange,
   onRowsPerPageChange,
 }) => {
@@ -317,7 +319,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         >
           {rows.map((_, levelIndex) => {
             if (isSubtotalRow) {
+              // For subtotal rows, we want to start from the CHILD level (subtotalLevel + 1)
               if (levelIndex < subtotalLevel) {
+                // Render parent level cells normally
                 const levelMap = rowSpanMap.get(levelIndex);
                 const spanInfo = levelMap?.get(rowIndex);
 
@@ -348,7 +352,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   </TableCell>
                 );
               } else if (levelIndex === subtotalLevel) {
-                const colSpanCount = rows.length - subtotalLevel;
+                return null;
+              } else if (levelIndex === subtotalLevel + 1) {
+                // Start the subtotal from the CHILD level and span the remaining columns
+                const colSpanCount = rows.length - (subtotalLevel + 1);
                 return (
                   <TableCell
                     key={`${rowData.key}-subtotal-merged`}
@@ -360,7 +367,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                       padding,
                       verticalAlign: "middle",
                       textAlign: "left",
-                      paddingLeft: `${(subtotalLevel + 1) * 16}px`,
+                      paddingLeft: `4px`,
                       backgroundColor: "#f5f5f5",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -373,10 +380,12 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
                   </TableCell>
                 );
               } else {
+                // Levels beyond subtotalLevel + 1 are covered by the colspan
                 return null;
               }
             }
 
+            // Regular row rendering (non-subtotal)
             const levelMap = rowSpanMap.get(levelIndex);
             const spanInfo = levelMap?.get(rowIndex);
 
@@ -602,7 +611,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
             </TableCell>
           ))}
 
-          {levels.length > 0 && (
+          {levels.length > 0 &&
             levels[0]?.map((node) => (
               <TableCell
                 key={node.key}
@@ -635,8 +644,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               >
                 {node.value}
               </TableCell>
-            ))
-          ) }
+            ))}
         </TableRow>
 
         {levels.slice(1).map((lvlNodes, levelIndex) => (
@@ -828,7 +836,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         <TablePagination
           rowsPerPageOptions={[10, 20, 50, 100]}
           component="div"
-          count={flatRowData.length}
+          count={totalNonSubtotalRows}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={onPageChange}

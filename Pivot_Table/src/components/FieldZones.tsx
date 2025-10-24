@@ -206,6 +206,8 @@ const FieldZone: React.FC<FieldZoneProps> = ({
                     "& .MuiChip-deleteIcon": { width: 16, height: 16 },
                     width: "fit-content",
                     flexShrink: 0,
+                    backgroundColor: "#a3e1edff",
+                    color: "black"
                   }}
                   draggable
                   onDragStart={(e) => {
@@ -253,6 +255,8 @@ const DraggableField: React.FC<DraggableFieldProps> = ({
         padding: "0 6px",
         "& .MuiChip-deleteIcon": { width: 16, height: 16 },
         flexShrink: 0,
+        backgroundColor: "#a3e1edff",
+                    color: "black"
       }}
     />
   );
@@ -340,6 +344,8 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
             cursor: "grab",
             "&:active": { cursor: "grabbing" },
           },
+          backgroundColor: "#a3e1edff",
+                    color: "black"
         }}
         onDragStart={handleDragStart}
         draggable
@@ -522,7 +528,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
             justifyContent: "space-between",
           }}
         >
-          <Box sx={{ maxWidth: "50%" }}>
+          <Box sx={{ width: "50%" }}>
             <FieldZone
               label="Row Fields"
               fields={rows}
@@ -536,7 +542,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               zoneType="rows"
             />
           </Box>
-          <Box sx={{ maxWidth: "50%" }}>
+          <Box sx={{ width: "50%" }}>
             <FieldZone
               label="Column Fields"
               fields={columns}

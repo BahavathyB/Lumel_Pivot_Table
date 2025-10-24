@@ -79,7 +79,9 @@ const PivotTable: React.FC = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -100,7 +102,10 @@ const PivotTable: React.FC = () => {
     if (zone === "rows") setRows((prev) => [...prev, fieldToMove]);
     if (zone === "columns") setColumns((prev) => [...prev, fieldToMove]);
     if (zone === "values")
-      setValues((prev) => [...prev, { field: fieldToMove, aggregation: "sum" }]);
+      setValues((prev) => [
+        ...prev,
+        { field: fieldToMove, aggregation: "sum" },
+      ]);
 
     setDraggedField(null);
   };
@@ -112,8 +117,10 @@ const PivotTable: React.FC = () => {
     setAvailableFields((prev) => [...prev, field]);
 
     if (zone === "rows") setRows((prev) => prev.filter((f) => f !== field));
-    if (zone === "columns") setColumns((prev) => prev.filter((f) => f !== field));
-    if (zone === "values") setValues((prev) => prev.filter((v) => v.field !== field));
+    if (zone === "columns")
+      setColumns((prev) => prev.filter((f) => f !== field));
+    if (zone === "values")
+      setValues((prev) => prev.filter((v) => v.field !== field));
   };
 
   const clearZone = (zone: "rows" | "columns" | "values" | "all") => {
@@ -128,7 +135,11 @@ const PivotTable: React.FC = () => {
       setAvailableFields((prev) => [...prev, ...removedFields]);
       setValues([]);
     } else {
-      const removedFields = [...rows, ...columns, ...values.map((v) => v.field)];
+      const removedFields = [
+        ...rows,
+        ...columns,
+        ...values.map((v) => v.field),
+      ];
       setAvailableFields((prev) => [...prev, ...removedFields]);
       setRows([]);
       setColumns([]);
@@ -136,12 +147,19 @@ const PivotTable: React.FC = () => {
     }
   };
 
-  const updateValueAggregation = (field: string, aggregation: AggregationType) =>
+  const updateValueAggregation = (
+    field: string,
+    aggregation: AggregationType
+  ) =>
     setValues((prev) =>
       prev.map((v) => (v.field === field ? { ...v, aggregation } : v))
     );
 
-  const handleFieldMove = (fromZone: "rows" | "columns" | "values", toZone: "rows" | "columns" | "values", field: string) => {
+  const handleFieldMove = (
+    fromZone: "rows" | "columns" | "values",
+    toZone: "rows" | "columns" | "values",
+    field: string
+  ) => {
     removeFieldFromZone(fromZone, field);
     handleDrop(toZone, field);
   };
@@ -150,7 +168,11 @@ const PivotTable: React.FC = () => {
   const buildNestedRows = useMemo(() => {
     if (!rows.length || !csvData.length) return [];
 
-    const build = (data: CSVRow[], level: number, parentKey = ""): NestedRowData[] => {
+    const build = (
+      data: CSVRow[],
+      level: number,
+      parentKey = ""
+    ): NestedRowData[] => {
       if (level >= rows.length) return [];
       const field = rows[level];
       const grouped = data.reduce((acc, row) => {
@@ -175,23 +197,27 @@ const PivotTable: React.FC = () => {
   // -------------------- FLATTEN ROW DATA FOR DISPLAY --------------------
   const flatRowData = useMemo((): FlatRowData[] => {
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
-      return [{
-        keys: ["total"],
-        values: ["Total"],
-        data: csvData,
-        key: "total",
-        level: 0,
-      }];
+      return [
+        {
+          keys: ["total"],
+          values: ["Total"],
+          data: csvData,
+          key: "total",
+          level: 0,
+        },
+      ];
     }
 
     if (columns.length > 0 && rows.length === 0 && values.length > 0) {
-      return [{
-        keys: ["total"],
-        values: ["Total"],
-        data: csvData,
-        key: "total",
-        level: 0,
-      }];
+      return [
+        {
+          keys: ["total"],
+          values: ["Total"],
+          data: csvData,
+          key: "total",
+          level: 0,
+        },
+      ];
     }
 
     if (rows.length === 0 && columns.length > 0 && values.length === 0) {
@@ -201,12 +227,16 @@ const PivotTable: React.FC = () => {
     if (!rows.length || !buildNestedRows.length) return [];
 
     const result: FlatRowData[] = [];
-    
-    const traverse = (nodes: NestedRowData[], pathKeys: string[] = [], pathValues: string[] = []) => {
+
+    const traverse = (
+      nodes: NestedRowData[],
+      pathKeys: string[] = [],
+      pathValues: string[] = []
+    ) => {
       nodes.forEach((node) => {
         const newKeys = [...pathKeys, node.key];
         const newValues = [...pathValues, node.value];
-        
+
         if (node.children.length === 0) {
           result.push({
             keys: newKeys,
@@ -217,7 +247,7 @@ const PivotTable: React.FC = () => {
           });
         } else {
           traverse(node.children, newKeys, newValues);
-          
+
           result.push({
             keys: newKeys,
             values: newValues,
@@ -230,22 +260,71 @@ const PivotTable: React.FC = () => {
         }
       });
     };
-    
+
     traverse(buildNestedRows);
     return result;
   }, [buildNestedRows, rows, csvData, columns, values]);
 
+  // -------------------- PAGINATION: Only count non-subtotal rows --------------------
+  const nonSubtotalRows = useMemo(() => {
+    return flatRowData.filter((row) => !row.isSubtotal);
+  }, [flatRowData]);
+
   const paginatedFlatRowData = useMemo(() => {
+    // Get the non-subtotal rows for this page
     const startIndex = page * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    return flatRowData.slice(startIndex, endIndex);
-  }, [flatRowData, page, rowsPerPage]);
+    const pageNonSubtotalRows = nonSubtotalRows.slice(startIndex, endIndex);
+
+    if (pageNonSubtotalRows.length === 0) return [];
+
+    // Get the keys of the first and last non-subtotal rows on this page
+    const firstKey = pageNonSubtotalRows[0]?.key;
+    const lastKey = pageNonSubtotalRows[pageNonSubtotalRows.length - 1]?.key;
+
+    // Find the indices in the full flatRowData
+    const firstIndex = flatRowData.findIndex((row) => row.key === firstKey);
+    const lastIndex = flatRowData.findIndex((row) => row.key === lastKey);
+
+    if (firstIndex === -1 || lastIndex === -1) return [];
+
+    // Include all rows (including subtotals) between first and last non-subtotal row
+    // Also include any subtotals that come after the last row if they belong to the same group
+    let endIndexInclusive = lastIndex;
+    
+    // Look ahead for subtotals that belong to the current page's data
+    for (let i = lastIndex + 1; i < flatRowData.length; i++) {
+      const row = flatRowData[i];
+      if (row?.isSubtotal) {
+        // Check if this subtotal's parent path matches any row on the current page
+        const subtotalParentPath = row.keys.slice(0, (row.subtotalLevel ?? 0) + 1).join("|");
+        const belongsToPage = pageNonSubtotalRows.some((pageRow) => {
+          const pageRowPath = pageRow.keys.slice(0, (row.subtotalLevel ?? 0) + 1).join("|");
+          return pageRowPath === subtotalParentPath;
+        });
+        
+        if (belongsToPage) {
+          endIndexInclusive = i;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+
+    return flatRowData.slice(firstIndex, endIndexInclusive + 1);
+  }, [flatRowData, nonSubtotalRows, page, rowsPerPage]);
 
   // -------------------- COLUMN HIERARCHY --------------------
   const buildNestedColumns = useMemo(() => {
     if (!columns.length || !csvData.length) return [];
 
-    const build = (data: CSVRow[], level: number, parentKey = ""): NestedColumnData[] => {
+    const build = (
+      data: CSVRow[],
+      level: number,
+      parentKey = ""
+    ): NestedColumnData[] => {
       if (level >= columns.length) return [];
       const field = columns[level];
       const grouped = data.reduce((acc, row) => {
@@ -278,7 +357,9 @@ const PivotTable: React.FC = () => {
 
   const leafColumnKeys = useMemo(() => {
     const collect = (nodes: NestedColumnData[]): string[] =>
-      nodes.flatMap((n) => (n.children.length === 0 ? [n.key] : collect(n.children)));
+      nodes.flatMap((n) =>
+        n.children.length === 0 ? [n.key] : collect(n.children)
+      );
     return collect(buildNestedColumns);
   }, [buildNestedColumns]);
 
@@ -330,7 +411,7 @@ const PivotTable: React.FC = () => {
         valueField: { field: key, aggregation: "count" },
         label: key,
       }));
-    
+
     return leafColumnKeys.flatMap((colKey) =>
       values.map((valueField) => ({
         key: `${colKey}|${valueField.field}_${valueField.aggregation}`,
@@ -353,8 +434,11 @@ const PivotTable: React.FC = () => {
 
       while (i < paginatedFlatRowData.length) {
         const currentRow = paginatedFlatRowData[i];
-        
-        if (currentRow?.isSubtotal && (currentRow.subtotalLevel ?? 0) <= levelIndex) {
+
+        if (
+          currentRow?.isSubtotal &&
+          (currentRow.subtotalLevel ?? 0) <= levelIndex
+        ) {
           i++;
           continue;
         }
@@ -362,17 +446,20 @@ const PivotTable: React.FC = () => {
         const currentValue = currentRow?.values[levelIndex];
         let startIndex = i;
         let spanCount = 1;
-        
         let j = i + 1;
+
         while (j < paginatedFlatRowData.length) {
           const nextRow = paginatedFlatRowData[j];
-          
-          if (nextRow?.isSubtotal && (nextRow.subtotalLevel ?? 0) <= levelIndex) {
+
+          if (
+            nextRow?.isSubtotal &&
+            (nextRow.subtotalLevel ?? 0) <= levelIndex
+          ) {
             break;
           }
-          
+
           const nextValue = nextRow?.values[levelIndex];
-          
+
           let parentMatch = true;
           for (let k = 0; k < levelIndex; k++) {
             if (nextRow?.values[k] !== currentRow?.values[k]) {
@@ -380,7 +467,7 @@ const PivotTable: React.FC = () => {
               break;
             }
           }
-          
+
           if (parentMatch && nextValue === currentValue) {
             spanCount++;
             j++;
@@ -388,7 +475,15 @@ const PivotTable: React.FC = () => {
             break;
           }
         }
-        
+
+        if (
+          j < paginatedFlatRowData.length &&
+          paginatedFlatRowData[j]?.isSubtotal === true &&
+          (paginatedFlatRowData[j]?.subtotalLevel ?? 0) === levelIndex
+        ) {
+          spanCount++;
+        }
+
         if (spanCount > 0) {
           levelMap.set(startIndex, {
             rowIndex: startIndex,
@@ -396,8 +491,16 @@ const PivotTable: React.FC = () => {
             value: currentValue ?? "",
           });
         }
-        
+
         i = j;
+
+        if (
+          i < paginatedFlatRowData.length &&
+          paginatedFlatRowData[i]?.isSubtotal === true &&
+          (paginatedFlatRowData[i]?.subtotalLevel ?? 0) === levelIndex
+        ) {
+          i++;
+        }
       }
 
       map.set(levelIndex, levelMap);
@@ -416,7 +519,12 @@ const PivotTable: React.FC = () => {
       const numericValues = cellData
         .map((row) => {
           const val = row[field];
-          const num = typeof val === "number" ? val : typeof val === "string" ? parseFloat(val) : NaN;
+          const num =
+            typeof val === "number"
+              ? val
+              : typeof val === "string"
+              ? parseFloat(val)
+              : NaN;
           return isNaN(num) ? null : num;
         })
         .filter((v): v is number => v !== null);
@@ -455,7 +563,7 @@ const PivotTable: React.FC = () => {
 
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
       data["total"] = { total: {} };
-      
+
       values.forEach((valueField) => {
         const matchingRows = csvData;
         if (matchingRows.length > 0) {
@@ -471,7 +579,9 @@ const PivotTable: React.FC = () => {
 
         if (!rowData.isSubtotal) {
           const matchingRows = csvData.filter((row) => {
-            return rows.every((field, i) => String(row[field] ?? "") === rowData.values[i]);
+            return rows.every(
+              (field, i) => String(row[field] ?? "") === rowData.values[i]
+            );
           });
 
           if (matchingRows.length > 0) {
@@ -483,18 +593,22 @@ const PivotTable: React.FC = () => {
       flatRowData.forEach((rowData) => {
         if (rowData.isSubtotal) {
           const subtotalLevel = rowData.subtotalLevel ?? 0;
-          const parentKeyPrefix = rowData.keys.slice(0, subtotalLevel + 1).join("|");
-          
+          const parentKeyPrefix = rowData.keys
+            .slice(0, subtotalLevel + 1)
+            .join("|");
+
           const directChildren = flatRowData.filter((childRow) => {
             if (childRow.key === rowData.key) return false;
-            
-            const childPrefix = childRow.keys.slice(0, subtotalLevel + 1).join("|");
+
+            const childPrefix = childRow.keys
+              .slice(0, subtotalLevel + 1)
+              .join("|");
             if (childPrefix !== parentKeyPrefix) return false;
-            
+
             if (childRow.isSubtotal) {
               return childRow.subtotalLevel === subtotalLevel + 1;
             }
-            
+
             return childRow.keys.length === subtotalLevel + 2;
           });
 
@@ -503,7 +617,7 @@ const PivotTable: React.FC = () => {
 
           values.forEach((valueField) => {
             const aggKey = `${valueField.field}_${valueField.aggregation}`;
-            
+
             const childValues = directChildren
               .map((childRow) => {
                 const val = data[childRow.key]?.["total"]?.[aggKey];
@@ -514,7 +628,8 @@ const PivotTable: React.FC = () => {
               .filter((v): v is number => v !== null);
 
             if (childValues.length > 0) {
-              data[rowData.key]!["total"]![aggKey] = _.sum(childValues).toString();
+              data[rowData.key]!["total"]![aggKey] =
+                _.sum(childValues).toString();
             } else {
               data[rowData.key]!["total"]![aggKey] = "";
             }
@@ -527,13 +642,14 @@ const PivotTable: React.FC = () => {
 
     if (columns.length > 0 && rows.length === 0 && values.length > 0) {
       data["total"] = {};
-      
+
       leafColumnKeys.forEach((colKey) => {
         if (!data["total"]![colKey]) data["total"]![colKey] = {};
 
         const matchingRows = csvData.filter((row) => {
           return columns.every(
-            (field, i) => String(row[field] ?? "") === (colKey.split("|")[i] || "")
+            (field, i) =>
+              String(row[field] ?? "") === (colKey.split("|")[i] || "")
           );
         });
 
@@ -562,7 +678,8 @@ const PivotTable: React.FC = () => {
                 (field, i) => String(row[field] ?? "") === rowData.values[i]
               );
               const colMatch = columns.every(
-                (field, i) => String(row[field] ?? "") === (colKey.split("|")[i] || "")
+                (field, i) =>
+                  String(row[field] ?? "") === (colKey.split("|")[i] || "")
               );
               return rowMatch && colMatch;
             });
@@ -577,7 +694,9 @@ const PivotTable: React.FC = () => {
 
         if (!rowData.isSubtotal) {
           const matchingRows = csvData.filter((row) => {
-            return rows.every((field, i) => String(row[field] ?? "") === rowData.values[i]);
+            return rows.every(
+              (field, i) => String(row[field] ?? "") === rowData.values[i]
+            );
           });
 
           if (matchingRows.length > 0) {
@@ -591,18 +710,22 @@ const PivotTable: React.FC = () => {
       flatRowData.forEach((rowData) => {
         if (rowData.isSubtotal) {
           const subtotalLevel = rowData.subtotalLevel ?? 0;
-          const parentKeyPrefix = rowData.keys.slice(0, subtotalLevel + 1).join("|");
-          
+          const parentKeyPrefix = rowData.keys
+            .slice(0, subtotalLevel + 1)
+            .join("|");
+
           const directChildren = flatRowData.filter((childRow) => {
             if (childRow.key === rowData.key) return false;
-            
-            const childPrefix = childRow.keys.slice(0, subtotalLevel + 1).join("|");
+
+            const childPrefix = childRow.keys
+              .slice(0, subtotalLevel + 1)
+              .join("|");
             if (childPrefix !== parentKeyPrefix) return false;
-            
+
             if (childRow.isSubtotal) {
               return childRow.subtotalLevel === subtotalLevel + 1;
             }
-            
+
             return childRow.keys.length === subtotalLevel + 2;
           });
 
@@ -611,7 +734,7 @@ const PivotTable: React.FC = () => {
 
             values.forEach((valueField) => {
               const aggKey = `${valueField.field}_${valueField.aggregation}`;
-              
+
               const childValues = directChildren
                 .map((childRow) => {
                   const val = data[childRow.key]?.[colKey]?.[aggKey];
@@ -622,7 +745,8 @@ const PivotTable: React.FC = () => {
                 .filter((v): v is number => v !== null);
 
               if (childValues.length > 0) {
-                data[rowData.key]![colKey]![aggKey] = _.sum(childValues).toString();
+                data[rowData.key]![colKey]![aggKey] =
+                  _.sum(childValues).toString();
               } else {
                 data[rowData.key]![colKey]![aggKey] = "";
               }
@@ -635,13 +759,23 @@ const PivotTable: React.FC = () => {
     return data;
   }, [csvData, rows, columns, flatRowData, leafColumnKeys, values]);
 
-  const hasConfiguredFields = rows.length > 0 || columns.length > 0 || values.length > 0;
+  const hasConfiguredFields =
+    rows.length > 0 || columns.length > 0 || values.length > 0;
   const showExcelFormat = !hasConfiguredFields;
   const showPivotTable = hasConfiguredFields;
 
   return (
-    <Box sx={{ display: "flex", height: "95%", gap: 2, pt: 2, pb: 2, overflow: "hidden" }}>
-      <Box sx={{ width: "80%", height: "100%",mb: 0, overflow: "auto" }}>
+    <Box
+      sx={{
+        display: "flex",
+        height: "95%",
+        gap: 2,
+        pt: 2,
+        pb: 2,
+        overflow: "hidden",
+      }}
+    >
+      <Box sx={{ width: "80%", height: "100%", mb: 0, overflow: "auto" }}>
         {showExcelFormat ? (
           <ExcelView
             csvData={csvData}
@@ -665,13 +799,14 @@ const PivotTable: React.FC = () => {
             leafColumnKeys={leafColumnKeys}
             page={page}
             rowsPerPage={rowsPerPage}
+            totalNonSubtotalRows={nonSubtotalRows.length}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         ) : null}
       </Box>
 
-      <Box sx={{ width: "20%", height: "100%", overflow: "hidden"}}>
+      <Box sx={{ width: "20%", height: "100%", overflow: "hidden" }}>
         <FieldZones
           availableFields={availableFields}
           rows={rows}

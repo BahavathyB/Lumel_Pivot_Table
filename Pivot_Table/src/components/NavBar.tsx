@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
         display: "flex",
         alignItems: "center",
         px: 0.5,
-        position: "frozen"
+        position: "frozen",
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
@@ -51,10 +51,20 @@ const NavBar: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Chip
             label={`File name: ${fileName}`}
-            color="success"
-            size="small"
             variant="outlined"
-            sx={{ mr: 1 }}
+            size="small"
+            sx={{
+              mr: 1,
+              height: "20px",
+              color: "#1976d2",
+              borderColor: "#1976d2",
+              fontSize: "0.6rem",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "rgba(163, 225, 237, 0.08)",
+                borderColor: "#90dfefff",
+              },
+            }}
           />
           <Button
             variant="outlined"
@@ -64,8 +74,9 @@ const NavBar: React.FC = () => {
             onClick={handleReset}
             sx={{
               borderRadius: 2,
-              
+              height: "20px",
               fontWeight: "bold",
+              fontSize: "0.6rem",
               px: 2,
               "&:hover": {
                 backgroundColor: "error.light",
