@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Papa from "papaparse";
 import { useDispatch } from "react-redux";
 import { setCsvData } from "../store/csvSlice";
+import "../styles/UploadFile.css";
 
 const UploadFile: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,27 +29,12 @@ const UploadFile: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        border: "2px dashed #8c9294ff",
-        borderRadius: 2,
-        p: 3,
-        width: "40%",
-        textAlign: "center",
-        m: "auto",
-        mt: "20px",
-        height: "80%",
-      }}
-    >
-      <CloudUploadIcon sx={{ fontSize: 48, color: "primary.main", mb: 2 }} />
-      <Typography variant="h5" gutterBottom>
+    <Box className="upload-file-container">
+      <CloudUploadIcon className="upload-file-icon" />
+      <Typography className="upload-file-title" gutterBottom>
         Upload CSV File
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography className="upload-file-subtitle">
         Drag and drop your CSV file here or click to browse
       </Typography>
 
@@ -57,9 +43,16 @@ const UploadFile: React.FC = () => {
         component="label"
         size="large"
         startIcon={<CloudUploadIcon />}
+        className="upload-file-button"
       >
         Choose CSV File
-        <input type="file" accept=".csv" hidden onChange={handleFileChange} />
+        <input 
+          type="file" 
+          accept=".csv" 
+          hidden 
+          onChange={handleFileChange}
+          className="upload-file-input"
+        />
       </Button>
     </Box>
   );

@@ -1,0 +1,44 @@
+
+/* Main Container */
+.pivot-table-main-container {
+  display: flex !important;
+  height: 100% !important;
+  gap: 16px !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Content Area */
+.pivot-table-content-area {
+  width: 80% !important;
+  height: 100% !important;
+  margin-bottom: 0 !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Field Zones Area */
+.pivot-table-field-zones-area {
+  width: 21.5% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure proper box sizing */
+.pivot-table-main-container * {
+  box-sizing: border-box !important;
+}
+
+/* Override MUI Defaults */
+.MuiBox-root.pivot-table-main-container {
+  padding: 16px 0 !important;
+}
+
+.MuiBox-root.pivot-table-content-area,
+.MuiBox-root.pivot-table-field-zones-area {
+  flex-shrink: 0 !important;
+}

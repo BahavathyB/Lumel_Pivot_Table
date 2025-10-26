@@ -18,6 +18,7 @@ import {
   ArrowDropDown,
   Search,
 } from "@mui/icons-material";
+import "../styles/FieldZones.css";
 
 type AggregationType = "sum" | "avg" | "count" | "max" | "min";
 
@@ -94,6 +95,7 @@ const FieldZone: React.FC<FieldZoneProps> = ({
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
     e.currentTarget.style.backgroundColor = "#f8f9fa";
   };
 
@@ -107,108 +109,41 @@ const FieldZone: React.FC<FieldZoneProps> = ({
 
   return (
     <Box
-      sx={{
-        height: 100,
-        minHeight: 100,
-        paddingLeft: 1,
-        border: "1.5px dashed #e0e0e0",
-        backgroundColor: "white",
-        position: "relative",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
+      className="field-zone-base"
       id={zoneId}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}
-      >
-        <Typography
-          variant="subtitle2"
-          fontWeight="bold"
-          sx={{ fontSize: "0.65rem" }}
-        >
+      <Box className="field-zone-header">
+        <Typography className="field-zone-label">
           {label}
         </Typography>
         {fields.length > 0 && (
           <Tooltip title={`Clear all ${label.toLowerCase()}`}>
-            <IconButton size="small" onClick={onClearAll} sx={{ fontSize: 10 }}>
-              <Clear fontSize="small" sx={{ fontSize: 10 }} />
+            <IconButton size="small" onClick={onClearAll} className="icon-button-small">
+              <Clear fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
       </Box>
-      <Box
-        sx={{
-          flex: 1,
-          overflow: "auto",
-          "&::-webkit-scrollbar": { width: "2px", height: "2px" },
-          "&::-webkit-scrollbar-track": {
-            background: "#f5f5f5",
-            borderRadius: "2px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
-            borderRadius: "2px",
-            "&:hover": { background: "#a8a8a8" },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 #f5f5f5",
-        }}
-      >
+      <Box className="field-zone-content">
         {fields.length === 0 ? (
-          <Box
-            sx={{
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontStyle="italic"
-              fontSize="0.6rem"
-            >
+          <Box className="empty-state">
+            <Typography className="empty-state-text">
               Drop fields here
             </Typography>
           </Box>
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 0.5,
-              minWidth: "min-content",
-            }}
-          >
+          <Box className="field-items-layout">
             {fields.map((field) => (
-              <Box key={field} sx={{ display: "flex", width: "fit-content" }}>
+              <Box key={field} className="field-item-container">
                 <Chip
                   label={field}
                   icon={<DragIndicator />}
-                  color= "primary"
                   size="small"
                   onDelete={() => onRemoveField(field)}
-                  sx={{
-                    cursor: "grab",
-                    "&:active": { cursor: "grabbing" },
-                    height: 15,
-                    fontSize: 10,
-                    padding: "0 6px",
-                    "& .MuiChip-deleteIcon": { width: 16, height: 16 },
-                    width: "fit-content",
-                    flexShrink: 0,
-                    backgroundColor: "#a3e1edff",
-                    color: "black"
-                  }}
+                  className="chip-base"
                   draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData("text/plain", field);
@@ -242,22 +177,9 @@ const DraggableField: React.FC<DraggableFieldProps> = ({
       draggable
       onDragStart={handleDragStart}
       label={field}
-      color="primary"
       size="small"
       icon={<DragIndicator />}
-      sx={{
-        cursor: "grab",
-        "&:active": { cursor: "grabbing" },
-        transition: "all 0.2s",
-        "&:hover": { transform: "scale(1.05)" },
-        height: 15,
-        fontSize: 10,
-        padding: "0 6px",
-        "& .MuiChip-deleteIcon": { width: 16, height: 16 },
-        flexShrink: 0,
-        backgroundColor: "#a3e1edff",
-                    color: "black"
-      }}
+      className="chip-base"
     />
   );
 };
@@ -299,54 +221,26 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
     <div>
       <Chip
         label={
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <Box className="value-field-inner-box">
             <span>
               {valueField.field} ({valueField.aggregation})
             </span>
             <IconButton
               size="small"
-              sx={{
-                width: 16,
-                height: 16,
-                cursor: "pointer",
-                padding: 0,
-                margin: 0,
-                minWidth: "auto",
-                color: "inherit",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
-                },
-              }}
+              className="aggregation-button"
               onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                 event.stopPropagation();
                 handleClick(event);
               }}
             >
-              <ArrowDropDown fontSize="small" sx={{ fontSize: 14 }} />
+              <ArrowDropDown fontSize="small" />
             </IconButton>
           </Box>
         }
         icon={<DragIndicator />}
-        color="primary"
         size="small"
         onDelete={() => onRemove(valueField.field)}
-        sx={{
-          cursor: "grab",
-          "&:active": { cursor: "grabbing" },
-          height: 15, // Slightly increased to accommodate the button
-          fontSize: 10,
-          padding: "0 4px",
-          "& .MuiChip-deleteIcon": { width: 16, height: 16 },
-          width: "fit-content",
-          flexShrink: 0,
-          "& .MuiChip-label": {
-            padding: "0 4px",
-            cursor: "grab",
-            "&:active": { cursor: "grabbing" },
-          },
-          backgroundColor: "#a3e1edff",
-                    color: "black"
-        }}
+        className="value-field-chip"
         onDragStart={handleDragStart}
         draggable
       />
@@ -356,13 +250,13 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
+        className="aggregation-menu"
       >
         {Object.entries(aggregationLabels).map(([key, label]) => (
           <MenuItem
             key={key}
             onClick={() => handleAggregationChange(key as AggregationType)}
             selected={valueField.aggregation === key}
-            sx={{ cursor: "pointer" }}
           >
             {label}
           </MenuItem>
@@ -412,36 +306,14 @@ const FieldZones: React.FC<FieldZonesProps> = ({
     onDragStart(field, fromZone);
 
   return (
-    <Paper
-      sx={{
-        height: "99%",
-        pl: 2,
-        pr: 2,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        overflow: "hidden",
-        width: "85%",
-        boxShadow:
-          "0px 2px 4px rgba(0,0,0,0.2), \
-           0px -2px 4px rgba(0,0,0,0.2), \
-           2px 0px 4px rgba(0,0,0,0.2), \
-           -2px 0px 4px rgba(0,0,0,0.2)",
-      }}
-    >
+    <Paper className="field-zones-paper">
       <TextField
         fullWidth
         size="small"
         placeholder="Search fields"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{
-          mb: 1,
-          mt:1,
-          flexShrink: 0,
-          "& .MuiInputBase-root": { height: 24, minHeight: 24, fontSize: 10 },
-          "& .MuiInputBase-input": { padding: "2px 8px" },
-        }}
+        className="field-zones-search"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -451,53 +323,19 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         }}
       />
 
-      <Box sx={{ mb: 1, flexShrink: 0 }}>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{ fontSize: "0.7rem", fontWeight: "bold" }}
-        >
+      <Box className="section-container">
+        <Typography className="field-zones-title">
           AVAILABLE FIELDS
         </Typography>
-        <Box
-          sx={{
-            height: 100,
-            overflow: "auto",
-            p: 1,
-            border: "1.5px dashed #e0e0e0",
-            borderRadius: 1,
-            backgroundColor: "white",
-            "&::-webkit-scrollbar": { width: "4px", height: "4px" },
-          }}
-        >
+        <Box className="available-fields-container">
           {filteredAvailableFields.length === 0 ? (
-            <Box
-              sx={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontStyle="italic"
-                fontSize="0.65rem"
-              >
+            <Box className="empty-state">
+              <Typography className="empty-state-text">
                 No fields available
               </Typography>
             </Box>
           ) : (
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 1,
-                width: "fit-content",
-                minWidth: "100%",
-              }}
-            >
+            <Box className="fields-layout">
               {filteredAvailableFields.map((f) => (
                 <DraggableField
                   key={f}
@@ -511,24 +349,12 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         </Box>
       </Box>
 
-      <Box sx={{ mb: 1, flexShrink: 0 }}>
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          gutterBottom
-          sx={{ fontSize: "0.7rem" }}
-        >
+      <Box className="section-container">
+        <Typography className="field-zones-subtitle">
           GROUP FIELDS
         </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-            minHeight: 100,
-            justifyContent: "space-between",
-          }}
-        >
-          <Box sx={{ width: "50%" }}>
+        <Box className="group-fields-container">
+          <Box className="group-field-half">
             <FieldZone
               label="Row Fields"
               fields={rows}
@@ -542,7 +368,7 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               zoneType="rows"
             />
           </Box>
-          <Box sx={{ width: "50%" }}>
+          <Box className="group-field-half">
             <FieldZone
               label="Column Fields"
               fields={columns}
@@ -559,93 +385,39 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         </Box>
       </Box>
 
-      <Box sx={{ mb: 1, flexShrink: 0 }}>
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          gutterBottom
-          sx={{ fontSize: "0.7rem" }}
-        >
+      <Box className="section-container">
+        <Typography className="field-zones-subtitle">
           AGGREGATION FIELDS
         </Typography>
         <Box
-          sx={{
-            p: 1,
-            mb: 2,
-            height: 100,
-            border: "1.5px dashed #ccc",
-            backgroundColor: "white",
-            display: "flex",
-            flexDirection: "column",
-          }}
+          className="value-field-container"
           id="values"
           onDragOver={onDragOver}
           onDrop={() => handleZoneDrop("values")}
         >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ backgroundColor: "white", flexShrink: 0, minHeight: 24 }}
-          >
-            <Typography
-              variant="subtitle2"
-              fontWeight="bold"
-              sx={{ color: "black", fontSize: "0.7rem" }}
-            >
+          <Box className="field-zone-header">
+            <Typography className="field-zone-label-black">
               Value Fields
             </Typography>
             {values.length > 0 && (
               <Tooltip title="Clear all values">
-                <IconButton size="small" onClick={() => onClearZone("values")}>
-                  <Clear fontSize="small" sx={{ fontSize: 12 }}/>
+                <IconButton size="small" onClick={() => onClearZone("values")} className="icon-button-small">
+                  <Clear fontSize="small" />
                 </IconButton>
               </Tooltip>
             )}
           </Box>
-          <Box
-            sx={{
-              flex: 1,
-              overflow: "auto",
-              "&::-webkit-scrollbar": { width: "2px", height: "2px" },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#c1c1c1",
-                "&:hover": { background: "#a8a8a8" },
-              },
-            }}
-          >
+          <Box className="field-zone-content">
             {values.length === 0 ? (
-              <Box
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  fontStyle="italic"
-                  fontSize="0.65rem"
-                >
+              <Box className="empty-state">
+                <Typography className="empty-state-text">
                   Drop fields here
                 </Typography>
               </Box>
             ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 0.5,
-                  minWidth: "min-content",
-                }}
-              >
+              <Box className="field-items-layout">
                 {values.map((valueField) => (
-                  <Box
-                    key={valueField.field}
-                    sx={{ display: "flex", width: "fit-content" }}
-                  >
+                  <Box key={valueField.field} className="field-item-container">
                     <ValueFieldWithAggregation
                       valueField={valueField}
                       onChange={onUpdateValueAggregation}
@@ -659,22 +431,17 @@ const FieldZones: React.FC<FieldZonesProps> = ({
             )}
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="outlined"
-            color="error"
-            sx={{
-              width: "50px",
-              height: "20px",
-              fontSize: "0.7rem",
-              fontWeight: "bold",
-              "&:hover": { backgroundColor: "error.light", color: "white" },
-            }}
-            onClick={() => onClearZone("all")}
-          >
-            Reset
-          </Button>
-        </Box>
+      </Box>
+
+      <Box className="reset-button-container">
+        <Button
+          variant="outlined"
+          color="error"
+          className="reset-button"
+          onClick={() => onClearZone("all")}
+        >
+          Reset
+        </Button>
       </Box>
     </Paper>
   );

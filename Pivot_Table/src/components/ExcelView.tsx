@@ -10,6 +10,7 @@ import {
   TablePagination,
   Box,
 } from "@mui/material";
+import "../styles/ExcelView.css";
 
 type CSVRow = Record<string, string | number | null | undefined>;
 
@@ -36,59 +37,15 @@ const ExcelView: React.FC<ExcelViewProps> = ({
   );
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <TableContainer 
-        sx={{ 
-          flex: 1,
-          maxHeight: "calc(100% - 52px)", 
-          position: "relative",
-          overflow: "auto",
-          "& .MuiTable-root": {
-            tableLayout: "auto", 
-          },
-          "&::-webkit-scrollbar": {
-            width: "6px",
-            height: "6px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f5f5f5",
-            borderRadius: "3px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
-            borderRadius: "3px",
-            "&:hover": {
-              background: "#a8a8a8",
-            },
-          },
-          "&::-webkit-scrollbar-corner": {
-            background: "#f5f5f5",
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 #f5f5f5",
-        }}
-      >
-        <Table stickyHeader sx={{ tableLayout: "auto" }}>
+    <Box className="excel-view-container">
+      <TableContainer className="excel-table-container">
+        <Table stickyHeader className="excel-table">
           <TableHead>
             <TableRow>
               {allColumns.map((column) => (
                 <TableCell
                   key={column}
-                  sx={{
-                    color: "black",
-                    fontWeight: "bold",
-                    backgroundColor: "rgba(204, 203, 203, 1)",
-                    textAlign: "left",
-                    borderLeft: "1px solid rgba(255, 255, 255, 0.3)",
-                    borderRight: "1px solid rgba(255,255,255,0.3)",
-                    fontSize: "0.7rem", 
-                    height: "20px", 
-                    padding: "2px 6px", 
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    minWidth: "auto", 
-                  }}
+                  className="excel-table-head-cell"
                 >
                   {column}
                 </TableCell>
@@ -99,24 +56,12 @@ const ExcelView: React.FC<ExcelViewProps> = ({
             {paginatedExcelData.map((row, index) => (
               <TableRow
                 key={index}
-                sx={{
-                  backgroundColor: index % 2 ? "action.hover" : "background.default",
-                  height: "32px", 
-                }}
+                className={index % 2 ? "excel-table-row-even" : "excel-table-row-odd"}
               >
                 {allColumns.map((column) => (
                   <TableCell
                     key={column}
-                    sx={{
-                      borderRight: "1px solid #e0e0e0",
-                      fontSize: "0.7rem", 
-                      height: "20px", 
-                      padding: "2px 6px", 
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      minWidth: "auto", 
-                    }}
+                    className="excel-table-body-cell"
                   >
                     {String(row[column] ?? "")}
                   </TableCell>
@@ -127,19 +72,7 @@ const ExcelView: React.FC<ExcelViewProps> = ({
         </Table>
       </TableContainer>
 
-      <Paper 
-        elevation={4}
-        sx={{ 
-          borderTop: "1px solid #e0e0e0",
-          backgroundColor: "white",
-          position: "sticky",
-          bottom: 0,
-          zIndex: 100,
-          minHeight: "44px", 
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
+      <Paper className="excel-pagination-container">
         <TablePagination
           rowsPerPageOptions={[10, 20, 50, 100]}
           component="div"
@@ -148,28 +81,7 @@ const ExcelView: React.FC<ExcelViewProps> = ({
           page={page}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
-          sx={{
-            width: "100%",
-            "& .MuiTablePagination-toolbar": {
-              minHeight: "44px", 
-              justifyContent: "flex-start",
-              padding: "0 12px", 
-            },
-            "& .MuiTablePagination-spacer": {
-              flex: "none",
-            },
-            "& .MuiTablePagination-selectLabel": {
-              margin: 0,
-              fontSize: "0.75rem", 
-            },
-            "& .MuiTablePagination-displayedRows": {
-              margin: 0,
-              fontSize: "0.75rem", 
-            },
-            "& .MuiInputBase-root": {
-              fontSize: "0.75rem",
-            },
-          }}
+          className="excel-table-pagination"
         />
       </Paper>
     </Box>

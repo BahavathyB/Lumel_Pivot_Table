@@ -1,0 +1,413 @@
+/* FieldZones.css */
+
+/* Main Paper Container */
+.field-zones-paper {
+  height: 99% !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  overflow: hidden !important;
+  width: 85% !important;
+  box-shadow: 
+    0px 2px 4px rgba(0,0,0,0.2), 
+    0px -2px 4px rgba(0,0,0,0.2), 
+    2px 0px 4px rgba(0,0,0,0.2), 
+    -2px 0px 4px rgba(0,0,0,0.2) !important;
+  background-color: white !important;
+}
+
+/* Search Field */
+.field-zones-search {
+  margin-bottom: 8px !important;
+  margin-top: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.field-zones-search .MuiInputBase-root {
+  height: 24px !important;
+  min-height: 24px !important;
+  font-size: 10px !important;
+}
+
+.field-zones-search .MuiInputBase-input {
+  padding: 2px 8px !important;
+  font-size: 10px !important;
+}
+
+/* Typography Styles */
+.field-zones-title {
+  font-size: 0.7rem !important;
+  font-weight: bold !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  margin-bottom: 8px !important;
+}
+
+.field-zones-subtitle {
+  font-size: 0.7rem !important;
+  font-weight: bold !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  margin-bottom: 8px !important;
+}
+
+.field-zone-label {
+  font-size: 0.65rem !important;
+  font-weight: bold !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+}
+
+.field-zone-label-black {
+  font-size: 0.65rem !important;
+  font-weight: bold !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  color: black !important;
+}
+
+/* Available Fields Section */
+.available-fields-container {
+  height: 100px !important;
+  overflow: auto !important;
+  padding: 8px !important;
+  border: 1.5px dashed #e0e0e0 !important;
+  border-radius: 4px !important;
+  background-color: white !important;
+  margin-bottom: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.available-fields-container::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+.available-fields-container::-webkit-scrollbar-track {
+  background: #f5f5f5 !important;
+  border-radius: 2px !important;
+}
+
+.available-fields-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border-radius: 2px !important;
+}
+
+.available-fields-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8 !important;
+}
+
+/* Fields Layout */
+.fields-layout {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  width: fit-content !important;
+  min-width: 100% !important;
+}
+
+/* Field Zone Base Styles */
+.field-zone-base {
+  height: 100px !important;
+  min-height: 100px !important;
+  padding-left: 8px !important;
+  border: 1.5px dashed #e0e0e0 !important;
+  background-color: white !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Field Zone Header */
+.field-zone-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background-color: white !important;
+  flex-shrink: 0 !important;
+  min-height: 24px !important;
+}
+
+/* Field Zone Content */
+.field-zone-content {
+  flex: 1 !important;
+  overflow: auto !important;
+}
+
+.field-zone-content::-webkit-scrollbar {
+  width: 2px !important;
+  height: 2px !important;
+}
+
+.field-zone-content::-webkit-scrollbar-track {
+  background: #f5f5f5 !important;
+  border-radius: 2px !important;
+}
+
+.field-zone-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border-radius: 2px !important;
+}
+
+.field-zone-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8 !important;
+}
+
+/* Field Items Layout */
+.field-items-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  min-width: min-content !important;
+}
+
+.field-item-container {
+  display: flex !important;
+  width: fit-content !important;
+}
+
+/* Chip Base Styles */
+.chip-base {
+  cursor: grab !important;
+  height: 15px !important;
+  font-size: 10px !important;
+  padding: 0 6px !important;
+  width: fit-content !important;
+  flex-shrink: 0 !important;
+  background-color: #a3e1edff !important;
+  color: black !important;
+  border: none !important;
+  transition: all 0.2s !important;
+}
+
+.chip-base:active {
+  cursor: grabbing !important;
+}
+
+.chip-base:hover {
+  transform: scale(1.05) !important;
+}
+
+.chip-base .MuiChip-deleteIcon {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 10px !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.chip-base .MuiChip-icon {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 10px !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.chip-base .MuiChip-label {
+  padding: 0 4px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+/* Value Field Chip */
+.value-field-chip {
+  cursor: grab !important;
+  height: 15px !important;
+  font-size: 10px !important;
+  padding: 0 4px !important;
+  width: fit-content !important;
+  flex-shrink: 0 !important;
+  background-color: #a3e1edff !important;
+  color: black !important;
+  border: none !important;
+}
+
+.value-field-chip:active {
+  cursor: grabbing !important;
+}
+
+.value-field-chip .MuiChip-deleteIcon {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 10px !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.value-field-chip .MuiChip-label {
+  padding: 0 4px !important;
+  cursor: grab !important;
+  font-size: 10px !important;
+}
+
+.value-field-chip .MuiChip-label:active {
+  cursor: grabbing !important;
+}
+
+/* Value Field Container */
+.value-field-container {
+  padding: 8px !important;
+  margin-bottom: 16px !important;
+  height: 100px !important;
+  border: 1.5px dashed #ccc !important;
+  background-color: white !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Aggregation Button */
+.aggregation-button {
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: auto !important;
+  color: inherit !important;
+}
+
+.aggregation-button:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Reset Button Container */
+.reset-button-container {
+  display: flex !important;
+  justify-content: flex-end !important;
+  flex-shrink: 0 !important;
+  margin-top: 8px !important;
+  margin-bottom: 4px !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  background-color: white !important;
+  padding: 4px 0 !important;
+  z-index: 10 !important;
+  min-height: 28px !important;
+}
+
+/* Reset Button */
+.reset-button {
+  width: 60px !important;
+  height: 15px !important;
+  font-size: 0.65rem !important;
+  font-weight: bold !important;
+  border-radius: 4px !important;
+  text-transform: none !important;
+  min-width: 60px !important;
+  flex-shrink: 0 !important;
+}
+
+.reset-button:hover {
+  background-color: #f44336 !important;
+  color: white !important;
+  border-color: #f44336 !important;
+}
+
+/* Icon Button */
+.icon-button-small {
+  font-size: 10px !important;
+  padding: 2px !important;
+}
+
+.icon-button-small .MuiSvgIcon-root {
+  font-size: 10px !important;
+}
+
+/* Empty State */
+.empty-state {
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.empty-state-text {
+  font-size: 0.6rem !important;
+  font-style: italic !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Group Fields Container */
+.group-fields-container {
+  display: flex !important;
+  gap: 8px !important;
+  min-height: 100px !important;
+  margin-bottom: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.group-field-half {
+  width: 50% !important;
+}
+
+/* Menu Styles */
+.aggregation-menu .MuiPaper-root {
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.15) !important;
+  border-radius: 4px !important;
+}
+
+.aggregation-menu .MuiMenuItem-root {
+  font-size: 0.75rem !important;
+  cursor: pointer !important;
+  min-height: 32px !important;
+  padding: 4px 12px !important;
+}
+
+.aggregation-menu .MuiMenuItem-root:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.aggregation-menu .MuiMenuItem-root.Mui-selected {
+  background-color: #e3f2fd !important;
+  font-weight: bold !important;
+}
+
+/* Value Field Inner Box */
+.value-field-inner-box {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* Section Containers */
+.section-container {
+  flex-shrink: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.section-container:last-of-type {
+  margin-bottom: 0 !important;
+}
+
+/* Override MUI Defaults */
+.MuiPaper-root.field-zones-paper {
+  background-color: white !important;
+}
+
+.MuiChip-root.chip-base,
+.MuiChip-root.value-field-chip {
+  background-color: #a3e1edff !important;
+  color: black !important;
+}
+
+.MuiChip-root.chip-base:hover,
+.MuiChip-root.value-field-chip:hover {
+  background-color: #90dfefff !important;
+}
+
+.MuiButton-root.reset-button {
+  border-color: #d32f2f !important;
+  color: #d32f2f !important;
+}
+
+.MuiButton-root.reset-button:hover {
+  background-color: #f44336 !important;
+  color: white !important;
+  border-color: #f44336 !important;
+}
+
+.MuiIconButton-root.icon-button-small {
+  padding: 2px !important;
+}
+
+.MuiTextField-root.field-zones-search .MuiOutlinedInput-root {
+  border-radius: 4px !important;
+}
+

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCsvData } from "../store/csvSlice";
 import type { RootState } from "../store/csvStore";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import "../styles/NavBar.css";
 
 const NavBar: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,73 +19,35 @@ const NavBar: React.FC = () => {
   return (
     <Paper
       elevation={6}
-      sx={{
-        backgroundColor: "white",
-        borderRadius: 0,
-        borderBottom: "1px solid",
-        borderBottomColor: "divider",
-        height: 45,
-        display: "flex",
-        alignItems: "center",
-        px: 0.5,
-        position: "frozen",
-      }}
+      className="navbar-paper"
     >
-      <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+      <Box className="navbar-container">
         <Typography
           variant="h6"
           component="div"
-          sx={{
-            fontWeight: "bold",
-            background: "linear-gradient(45deg, #1976d2, #00bcd4)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            color: "transparent",
-            fontSize: "1rem",
-          }}
+          className="navbar-title"
         >
           PIVOT TABLE
         </Typography>
       </Box>
 
       {hasData && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box className="navbar-content">
           <Chip
             label={`File name: ${fileName}`}
             variant="outlined"
             size="small"
-            sx={{
-              mr: 1,
-              height: "20px",
-              color: "#1976d2",
-              borderColor: "#1976d2",
-              fontSize: "0.6rem",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "rgba(163, 225, 237, 0.08)",
-                borderColor: "#90dfefff",
-              },
-            }}
+            className="navbar-chip"
           />
           <Button
             variant="outlined"
             color="error"
             size="small"
-            startIcon={<RestartAltIcon />}
+            startIcon={<RestartAltIcon className="navbar-button-icon" />}
             onClick={handleReset}
-            sx={{
-              borderRadius: 2,
-              height: "20px",
-              fontWeight: "bold",
-              fontSize: "0.6rem",
-              px: 2,
-              "&:hover": {
-                backgroundColor: "error.light",
-                color: "white",
-              },
-            }}
+            className="navbar-button"
           >
-            change file
+            Change file
           </Button>
         </Box>
       )}

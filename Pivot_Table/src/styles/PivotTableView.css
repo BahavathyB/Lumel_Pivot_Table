@@ -1,0 +1,333 @@
+/* Styling constants */
+:root {
+  --cell-height: 30px;
+  --font-size: 0.7rem;
+  --padding: 2px 6px;
+  --grey-border: 1px solid #e0e0e0;
+}
+
+/* Container styles */
+.pivot-table-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  
+}
+
+.table-container {
+  flex: 1 !important;
+  max-height: calc(100% - 52px) !important;
+  position: relative !important;
+  overflow: auto !important;
+}
+
+.table-container::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1 !important;
+  border-radius: 3px !important;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border-radius: 3px !important;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8 !important;
+}
+
+.table-container::-webkit-scrollbar-corner {
+  background: #f1f1f1 !important;
+}
+
+.table-container {
+  scrollbar-width: thin !important;
+  scrollbar-color: #c1c1c1 #f1f1f1 !important;
+}
+
+.table {
+  position: relative !important;
+  table-layout: auto !important;
+  min-width: 100% !important;
+  border-spacing: 0 !important;
+  border-collapse: separate !important;
+}
+
+.table-head {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  display: table-header-group !important;
+}
+
+/* Header row styles */
+.header-row .row-header-cell {
+  color: black !important;
+  font-weight: bold !important;
+  background-color: rgba(204, 203, 203, 1) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  min-width: auto !important;
+  max-width: auto !important;
+  width: auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 90 !important;
+  border-left: var(--grey-border) !important;
+  border-top: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+
+.header-row .row-header-with-columns {
+  height: calc(var(--cell-height) * var(--total-header-rows, 1)) !important;
+}
+
+.header-row .value-header-cell {
+  color: black !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  background-color: rgba(204, 203, 203, 1) !important;
+  white-space: nowrap !important;
+  font-size: 0.6rem !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  min-width: auto !important;
+  max-width: auto !important;
+  width: auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 90 !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.header-row .column-header-cell {
+  color: black !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  background-color: rgba(204, 203, 203, 1) !important;
+  white-space: nowrap !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  min-height: var(--cell-height) !important;
+  max-height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  min-width: auto !important;
+  max-width: auto !important;
+  width: auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: sticky !important;
+  z-index: 90 !important;
+  box-sizing: border-box !important;
+  border-left: var(--grey-border) !important;
+  border-top: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.header-row .column-header-level-0 {
+  top: 0 !important;
+}
+
+.header-row .aggregation-header-cell {
+  color: black !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  background-color: rgba(204, 203, 203, 1) !important;
+  white-space: nowrap !important;
+  font-size: 0.6rem !important;
+  height: var(--cell-height) !important;
+  min-height: var(--cell-height) !important;
+  max-height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  min-width: auto !important;
+  max-width: auto !important;
+  width: auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: sticky !important;
+  z-index: 85 !important;
+  box-sizing: border-box !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+/* Grand total row styles */
+.grand-total-row {
+  position: sticky !important;
+  z-index: 88 !important;
+  background-color: #f5f5f5 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.grand-total-label-cell {
+  font-weight: bold !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  background-color: #d4ecf1ff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.grand-total-value-cell {
+  font-weight: bold !important;
+  background-color: #d4ecf1ff !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+  text-align: center !important;
+}
+
+/* Total row styles */
+.total-row .total-value-cell {
+  font-weight: normal !important;
+  background-color: #f5f5f5 !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+  text-align: center !important;
+}
+
+/* Pivot table row styles */
+.pivot-table-row {
+  background-color: inherit !important;
+}
+
+.pivot-table-row.subtotal-row {
+  background-color: #f5f5f5 !important;
+}
+
+.subtotal-parent-cell {
+  font-weight: normal !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  background-color: white !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.subtotal-merged-cell {
+  font-weight: bold !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  padding-left: 4px !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+  background-color: #f5f5f5 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.regular-row-cell {
+  font-weight: normal !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  background-color: white !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+}
+
+.pivot-value-cell {
+  font-weight: normal !important;
+  font-size: var(--font-size) !important;
+  height: var(--cell-height) !important;
+  padding: var(--padding) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  border-left: var(--grey-border) !important;
+  border-bottom: var(--grey-border) !important;
+  text-align: center !important;
+}
+
+.pivot-value-cell.subtotal-value-cell {
+  font-weight: bold !important;
+  background-color: #f5f5f5 !important;
+}
+
+/* Pagination styles */
+.pagination-container {
+  border: 1px solid #e0e0e0 !important;
+  background-color: white !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 100 !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.4) !important;
+}
+
+.table-pagination {
+  width: 100% !important;
+}
+
+.table-pagination .MuiTablePagination-toolbar {
+  min-height: 44px !important;
+  justify-content: flex-start !important;
+  padding: 0 12px !important;
+}
+
+.table-pagination .MuiTablePagination-spacer {
+  flex: none !important;
+}
+
+.table-pagination .MuiTablePagination-selectLabel {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+}
+
+.table-pagination .MuiTablePagination-displayedRows {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+}
+
+.table-pagination .MuiInputBase-root {
+  font-size: 0.75rem !important;
+}
