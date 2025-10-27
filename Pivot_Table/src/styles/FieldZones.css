@@ -31,6 +31,14 @@
   font-size: 10px !important;
 }
 
+.field-zones-search .MuiOutlinedInput-root.Mui-focused fieldset {
+  border: 2px solid #a3e1edff !important;
+}
+
+.field-zones-search .MuiInputBase-root:hover fieldset{
+  border: 2px solid #a3e1edff !important;
+}
+
 .field-zones-search .MuiInputBase-input {
   padding: 2px 8px !important;
   font-size: 10px !important;

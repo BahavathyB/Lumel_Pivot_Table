@@ -257,6 +257,11 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         </TableRow>,
       ];
     }
+// // { key: "asia-india-male", values: ["Asia", "India", "Male"], level: 2, isSubtotal: false },
+
+  // { key: "asia-india-male-total", values: ["Asia", "India", "Male"], level: 3, isSubtotal: true, subtotalLevel: 2 },
+
+
 
     return paginatedFlatRowData.map((rowData, rowIndex) => {
       const isSubtotalRow = rowData.isSubtotal === true;
@@ -268,6 +273,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
           className={`pivot-table-row ${isSubtotalRow ? "subtotal-row" : ""}`}
         >
           {rows.map((_, levelIndex) => {
+
             if (isSubtotalRow) {
               // subtotal rows as child level (subtotalLevel + 1)
               if (levelIndex < subtotalLevel) {

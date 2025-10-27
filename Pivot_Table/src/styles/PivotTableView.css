@@ -292,8 +292,9 @@
 }
 
 /* Pagination styles */
+
 .pagination-container {
-  border: 1px solid #e0e0e0 !important;
+  border-top: 1px solid #e0e0e0 !important;
   background-color: white !important;
   position: sticky !important;
   bottom: 0 !important;
@@ -301,9 +302,10 @@
   min-height: 44px !important;
   display: flex !important;
   align-items: center !important;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.4) !important;
+  box-shadow: 0px -2px 4px -1px rgba(0,0,0,0.2), !important;
 }
 
+/* Table Pagination */
 .table-pagination {
   width: 100% !important;
 }
@@ -330,4 +332,20 @@
 
 .table-pagination .MuiInputBase-root {
   font-size: 0.75rem !important;
+}
+
+.table-pagination .MuiTablePagination-select {
+  font-size: 0.75rem !important;
+}
+
+.table-pagination .MuiTablePagination-actions {
+  margin-left: auto !important;
+}
+
+.table-pagination .MuiIconButton-root {
+  padding: 4px !important;
+}
+
+.table-pagination .MuiSvgIcon-root {
+  font-size: 1.25rem !important;
 }

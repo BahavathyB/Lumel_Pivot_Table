@@ -70,12 +70,8 @@ const PivotTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
 
   // useMemo to State Variable
-  const [paginatedFlatRowData, setPaginatedFlatRowData] = useState<
-    FlatRowData[]
-  >([]);
-  const [pivotData, setPivotData] = useState<
-    Record<string, Record<string, Record<string, string>>>
-  >({});
+  const [paginatedFlatRowData, setPaginatedFlatRowData] = useState<FlatRowData[]>([]);
+  const [pivotData, setPivotData] = useState<Record<string, Record<string, Record<string, string>>>>({});
 
   useEffect(() => {
     if (allColumns.length > 0) setAvailableFields(allColumns);
@@ -203,7 +199,6 @@ const PivotTable: React.FC = () => {
 
     return build(csvData, 0);
   }, [csvData, rows]);
-  console.log("nested rows: " + buildNestedRows);
 
   // -------------------- FLATTEN ROW DATA FOR DISPLAY --------------------
   const flatRowData = useMemo((): FlatRowData[] => {
@@ -276,6 +271,8 @@ const PivotTable: React.FC = () => {
     return result;
   }, [buildNestedRows, rows, csvData, columns, values]);
 
+
+  
   // -------------------- PAGINATION: Only count non-subtotal rows --------------------
   const nonSubtotalRows = useMemo(() => {
     return flatRowData.filter((row) => !row.isSubtotal);
@@ -376,7 +373,6 @@ const PivotTable: React.FC = () => {
 
     return build(csvData, 0);
   }, [csvData, columns, values.length]);
-  console.log("nested columns: " + buildNestedColumns);
 
   const leafColumnKeys = useMemo(() => {
     const collect = (nodes: NestedColumnData[]): string[] =>
@@ -786,7 +782,6 @@ const PivotTable: React.FC = () => {
       }
 
       setPivotData(data);
-      console.log("pivot data: " + pivotData);
     };
 
     calculatePivotData();
