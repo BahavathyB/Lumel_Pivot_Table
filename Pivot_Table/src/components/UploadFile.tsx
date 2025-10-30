@@ -35,7 +35,7 @@ const UploadFile: React.FC = () => {
         Upload CSV File
       </Typography>
       <Typography className="upload-file-subtitle">
-        Drag and drop your CSV file here or click to browse
+        Click here to browse CSV file
       </Typography>
 
       <Button

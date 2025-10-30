@@ -7,7 +7,11 @@ import ExcelView from "./ExcelView";
 import FieldZones from "./FieldZones";
 import PivotTableView from "./PivotTableView";
 import { PivotTableService } from "../services/pivotTableService";
-import type { CSVRow, AggregationType, ValueField } from "../types/pivotTableViewTypes";
+import type {
+  CSVRow,
+  AggregationType,
+  ValueField,
+} from "../types/PivotTable.types"
 
 import "../styles/PivotTable.css";
 
@@ -18,7 +22,6 @@ const PivotTable: React.FC = () => {
     () => (csvData.length > 0 ? Object.keys(csvData[0] ?? {}) : []),
     [csvData]
   );
-
 
   const [availableFields, setAvailableFields] = useState<string[]>([]);
   const [rows, setRows] = useState<string[]>([]);
@@ -55,7 +58,7 @@ const PivotTable: React.FC = () => {
   );
 
   const paginatedFlatRowData = useMemo(
-    () => 
+    () =>
       PivotTableService.getPaginatedFlatRowData(
         flatRowData,
         nonSubtotalRows,
@@ -97,7 +100,7 @@ const PivotTable: React.FC = () => {
 
   // Calculate pivot aggregation data
   const pivotData = useMemo(
-    () => 
+    () =>
       PivotTableService.calculatePivotData(
         csvData,
         rows,
@@ -121,9 +124,12 @@ const PivotTable: React.FC = () => {
   }, [csvData, rows, columns, values]);
 
   // -------------------- EVENT HANDLERS --------------------
-  const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
-  
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangePage = (event: unknown, newPage: number) =>
+    setPage(newPage);
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -184,7 +190,10 @@ const PivotTable: React.FC = () => {
   };
 
   // Updates aggregation type (sum, avg, count, etc.)
-  const updateValueAggregation = (field: string, aggregation: AggregationType) => {
+  const updateValueAggregation = (
+    field: string,
+    aggregation: AggregationType
+  ) => {
     setValues((prev) =>
       PivotTableService.updateValueAggregation(field, aggregation, prev)
     );

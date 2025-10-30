@@ -1,47 +1,43 @@
-
 import type {
   CSVRow,
   ValueField,
   FlatRowData,
   FinalColumn,
   NestedColumnData,
-} from "../types/pivotTableViewTypes";
+} from "../types/PivotTableView.types";
+
+import lodash, { values } from "lodash";
 
 export class PivotTableViewService {
-
   static calculateAggregation(data: CSVRow[], valueField: ValueField): string {
-    if (data.length === 0) return "";
+    if (lodash.isEmpty(data)) return "";
 
     // Extract numeric values
-    const numericValues = data
-      .map(row => {
-        const val = row[valueField.field];
-        if (val === null || val === undefined || val === "") return null;
-        const num = parseFloat(String(val));
-        return isNaN(num) ? null : num;
-      })
-      .filter((v): v is number => v !== null);
+    const numericValues = lodash
+      .chain(data)
+      .map((row) => row[valueField.field])
+      .filter((value) => !lodash.isNil(value) && value !== "")
+      .map((value) => parseFloat(String(value)))
+      .filter((value) => !lodash.isNaN(value))
+      .value();
 
     // No numeris -> count
-    if (numericValues.length === 0) {
+    if (lodash.isEmpty(numericValues)) {
       return valueField.aggregation === "count" ? data.length.toString() : "";
     }
 
     // Aggregation based on selection
     switch (valueField.aggregation) {
       case "sum":
-        return numericValues.reduce((sum, val) => sum + val, 0).toString();
+        return lodash.sum(numericValues).toString();
       case "avg":
-        return (
-          numericValues.reduce((sum, val) => sum + val, 0) /
-          numericValues.length
-        ).toFixed(2);
+        return (lodash.sum(numericValues) / lodash.size(numericValues)).toFixed(2);
       case "count":
-        return numericValues.length.toString();
+        return lodash.size(numericValues).toString();
       case "max":
-        return Math.max(...numericValues).toString();
+        return lodash.max(numericValues)?.toString() || "";
       case "min":
-        return Math.min(...numericValues).toString();
+        return lodash.min(numericValues)?.toString() || "";
       default:
         return "";
     }
@@ -59,7 +55,7 @@ export class PivotTableViewService {
       const aggKey = `${valueField.field}_${valueField.aggregation}`;
       const columnValues: number[] = [];
 
-      flatRowData.forEach(rowData => {
+      flatRowData.forEach((rowData) => {
         if (!rowData.isSubtotal) {
           const val = pivotData[rowData.key]?.[colKey]?.[aggKey];
           if (val && val !== "" && val !== "-") {
@@ -89,17 +85,23 @@ export class PivotTableViewService {
     const collectByLevel = (nodes: NestedColumnData[], level: number) => {
       levels[level] = levels[level] || [];
       levels[level].push(...nodes);
-      nodes.forEach(n => n.children.length && collectByLevel(n.children, level + 1));
+      nodes.forEach(
+        (n) => n.children.length && collectByLevel(n.children, level + 1)
+      );
     };
 
     collectByLevel(buildNestedColumns, 0);
     return levels;
   }
 
-  static calculateTotalHeaderRows(columns: string[], values: ValueField[]): number {
-    return (columns.length > 0 ? columns.length : 0) + (values.length > 0 ? 1 : 0);
+  static calculateTotalHeaderRows(
+    columns: string[],
+    values: ValueField[]
+  ): number {
+    return (
+      (columns.length > 0 ? columns.length : 0) + (values.length > 0 ? 1 : 0)
+    );
   }
-
 
   // map each (column × valueField) pair into a renderable column cell.
   static generateValueColumns(
@@ -108,15 +110,15 @@ export class PivotTableViewService {
   ): Array<{ key: string; valueField: ValueField }> {
     if (leafColumnKeys.length > 0) {
       // Multiple leaf columns — expand into combinations
-      return leafColumnKeys.flatMap(colKey =>
-        values.map(valueField => ({
+      return leafColumnKeys.flatMap((colKey) =>
+        values.map((valueField) => ({
           key: `${colKey}-${valueField.field}`,
           valueField,
         }))
       );
     } else {
       // No column grouping — just use value fields directly
-      return values.map(valueField => ({
+      return values.map((valueField) => ({
         key: `value-${valueField.field}`,
         valueField,
       }));
@@ -128,7 +130,7 @@ export class PivotTableViewService {
     return rows.length === 0 || values.length === 0;
   }
 
-//  For sticky
+  //  For sticky
   static calculateGrandTotalTop(totalHeaderRows: number): number {
     return 30 * totalHeaderRows;
   }

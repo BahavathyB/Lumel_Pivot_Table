@@ -1,9 +1,7 @@
-
-import type { AggregationType } from "../types/fieldZonesTypes";
-import type { DragEvent as ReactDragEvent } from 'react';
+import type { AggregationType } from "../types/FieldZones.types";
+import type { DragEvent as ReactDragEvent } from "react";
 
 export class FieldZonesService {
-
   // Map of aggregation type identifiers to their display labels
   static readonly aggregationLabels: Record<AggregationType, string> = {
     sum: "Sum",
@@ -14,13 +12,16 @@ export class FieldZonesService {
   };
 
   // Filters available fields based on user search input (case-insensitive)
-  static filterAvailableFields(availableFields: string[], searchTerm: string): string[] {
-    return availableFields.filter(field =>
+  static filterAvailableFields(
+    availableFields: string[],
+    searchTerm: string
+  ): string[] {
+    return availableFields.filter((field) =>
       field.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
-  // Handles drag over event 
+  // Handles drag over event
   static handleDragOver(e: ReactDragEvent<HTMLDivElement>): void {
     e.preventDefault();
     if (e.currentTarget) e.currentTarget.style.backgroundColor = "#e3f2fd"; // Highlight zone
@@ -47,7 +48,6 @@ export class FieldZonesService {
     }
   }
 
-
   // Handles drag start
   static handleDragStart(
     e: ReactDragEvent,
@@ -67,7 +67,7 @@ export class FieldZonesService {
     return this.aggregationLabels[aggregation];
   }
 
-//  Returns list of all supported aggregation types
+  //  Returns list of all supported aggregation types
   static getAggregationTypes(): AggregationType[] {
     return Object.keys(this.aggregationLabels) as AggregationType[];
   }

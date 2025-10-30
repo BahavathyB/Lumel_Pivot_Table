@@ -1,4 +1,8 @@
-import React, { type DragEvent as ReactDragEvent, useState, useMemo } from "react";
+import React, {
+  type DragEvent as ReactDragEvent,
+  useState,
+  useMemo,
+} from "react";
 import {
   Box,
   Typography,
@@ -25,11 +29,8 @@ import type {
   DraggableFieldProps,
   ValueFieldWithAggregationProps,
   FieldZonesProps,
-} from "../types/fieldZonesTypes";
+} from "../types/FieldZones.types";
 import { FieldZonesService } from "../services/fieldZonesService";
-
-
-
 
 // Individual field zone for rows/columns
 const FieldZone: React.FC<FieldZoneProps> = ({
@@ -43,18 +44,24 @@ const FieldZone: React.FC<FieldZoneProps> = ({
   zoneType,
 }) => {
   return (
-    <Box 
-      className="field-zone-base" 
+    <Box
+      className="field-zone-base"
       id={zoneId}
       onDragOver={FieldZonesService.handleDragOver}
       onDragLeave={FieldZonesService.handleDragLeave}
-      onDrop={(e: ReactDragEvent<HTMLDivElement>) => FieldZonesService.handleDrop(e, onFieldDrop)}
+      onDrop={(e: ReactDragEvent<HTMLDivElement>) =>
+        FieldZonesService.handleDrop(e, onFieldDrop)
+      }
     >
       <Box className="field-zone-header">
         <Typography className="field-zone-label">{label}</Typography>
         {fields.length > 0 && (
           <Tooltip title={`Clear all ${label.toLowerCase()}`}>
-            <IconButton size="small" onClick={onClearAll} className="icon-button-small">
+            <IconButton
+              size="small"
+              onClick={onClearAll}
+              className="icon-button-small"
+            >
               <Clear fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -63,7 +70,9 @@ const FieldZone: React.FC<FieldZoneProps> = ({
       <Box className="field-zone-content">
         {fields.length === 0 ? (
           <Box className="empty-state">
-            <Typography className="empty-state-text">Drop fields here</Typography>
+            <Typography className="empty-state-text">
+              Drop fields here
+            </Typography>
           </Box>
         ) : (
           <Box className="field-items-layout">
@@ -76,7 +85,14 @@ const FieldZone: React.FC<FieldZoneProps> = ({
                   onDelete={() => onRemoveField(field)}
                   className="chip-base"
                   draggable
-                  onDragStart={(e: ReactDragEvent) => FieldZonesService.handleDragStart(e, field, zoneType, onFieldDragStart)}
+                  onDragStart={(e: ReactDragEvent) =>
+                    FieldZonesService.handleDragStart(
+                      e,
+                      field,
+                      zoneType,
+                      onFieldDragStart
+                    )
+                  }
                 />
               </Box>
             ))}
@@ -87,13 +103,18 @@ const FieldZone: React.FC<FieldZoneProps> = ({
   );
 };
 
-
 // Draggable field chip for available fields
-const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fromZone }) => {
+const DraggableField: React.FC<DraggableFieldProps> = ({
+  field,
+  onDragStart,
+  fromZone,
+}) => {
   return (
     <Chip
       draggable
-      onDragStart={(e: ReactDragEvent) => FieldZonesService.handleDragStart(e, field, fromZone, onDragStart)}
+      onDragStart={(e: ReactDragEvent) =>
+        FieldZonesService.handleDragStart(e, field, fromZone, onDragStart)
+      }
       label={field}
       size="small"
       icon={<DragIndicator />}
@@ -102,8 +123,7 @@ const DraggableField: React.FC<DraggableFieldProps> = ({ field, onDragStart, fro
   );
 };
 
-
- // Value field with aggregation dropdown
+// Value field with aggregation dropdown
 const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   valueField,
   onChange,
@@ -137,7 +157,14 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
         size="small"
         onDelete={() => onRemove(valueField.field)}
         className="value-field-chip"
-        onDragStart={(e: ReactDragEvent) => FieldZonesService.handleDragStart(e, valueField.field, fromZone, onDragStart)}
+        onDragStart={(e: ReactDragEvent) =>
+          FieldZonesService.handleDragStart(
+            e,
+            valueField.field,
+            fromZone,
+            onDragStart
+          )
+        }
         draggable
       />
       <Menu
@@ -165,8 +192,7 @@ const ValueFieldWithAggregation: React.FC<ValueFieldWithAggregationProps> = ({
   );
 };
 
-
- // Main FieldZones component
+// Main FieldZones component
 const FieldZones: React.FC<FieldZonesProps> = ({
   availableFields,
   rows,
@@ -205,13 +231,14 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         }}
       />
 
-
       <Box className="section-container">
         <Typography className="field-zones-title">AVAILABLE FIELDS</Typography>
         <Box className="available-fields-container">
           {filteredAvailableFields.length === 0 ? (
             <Box className="empty-state">
-              <Typography className="empty-state-text">No fields available</Typography>
+              <Typography className="empty-state-text">
+                No fields available
+              </Typography>
             </Box>
           ) : (
             <Box className="fields-layout">
@@ -227,7 +254,6 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           )}
         </Box>
       </Box>
-
 
       <Box className="section-container">
         <Typography className="field-zones-subtitle">GROUP FIELDS</Typography>
@@ -251,7 +277,9 @@ const FieldZones: React.FC<FieldZonesProps> = ({
               onRemoveField={(field) => onRemoveField("columns", field)}
               onClearAll={() => onClearZone("columns")}
               zoneId="columns"
-              onFieldDrop={(field, fromZone) => onDrop("columns", field, fromZone)}
+              onFieldDrop={(field, fromZone) =>
+                onDrop("columns", field, fromZone)
+              }
               onFieldDragStart={onDragStart}
               zoneType="columns"
             />
@@ -259,9 +287,10 @@ const FieldZones: React.FC<FieldZonesProps> = ({
         </Box>
       </Box>
 
-
       <Box className="section-container">
-        <Typography className="field-zones-subtitle">AGGREGATION FIELDS</Typography>
+        <Typography className="field-zones-subtitle">
+          AGGREGATION FIELDS
+        </Typography>
         <Box
           className="value-field-container"
           id="values"
@@ -269,10 +298,16 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           onDrop={() => draggedField && onDrop("values")}
         >
           <Box className="field-zone-header">
-            <Typography className="field-zone-label-black">Value Fields</Typography>
+            <Typography className="field-zone-label-black">
+              Value Fields
+            </Typography>
             {values.length > 0 && (
               <Tooltip title="Clear all values">
-                <IconButton size="small" onClick={() => onClearZone("values")} className="icon-button-small">
+                <IconButton
+                  size="small"
+                  onClick={() => onClearZone("values")}
+                  className="icon-button-small"
+                >
                   <Clear fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -281,7 +316,9 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           <Box className="field-zone-content">
             {values.length === 0 ? (
               <Box className="empty-state">
-                <Typography className="empty-state-text">Drop fields here</Typography>
+                <Typography className="empty-state-text">
+                  Drop fields here
+                </Typography>
               </Box>
             ) : (
               <Box className="field-items-layout">
@@ -301,7 +338,6 @@ const FieldZones: React.FC<FieldZonesProps> = ({
           </Box>
         </Box>
       </Box>
-
 
       <Box className="reset-button-container">
         <Button

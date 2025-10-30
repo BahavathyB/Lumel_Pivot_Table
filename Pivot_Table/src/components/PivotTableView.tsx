@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import "../styles/PivotTableView.css";
 
-import type { PivotTableViewProps } from "../types/pivotTableViewTypes";
+import type { PivotTableViewProps } from "../types/PivotTableView.types";
 import { PivotTableViewService } from "../services/pivotTableViewService";
 
 const PivotTableView: React.FC<PivotTableViewProps> = ({
@@ -33,18 +33,28 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
   onRowsPerPageChange,
 }) => {
   //grand total data
-  const grandTotalData = PivotTableViewService.calculateGrandTotal(flatRowData, finalColumns, pivotData);
+  const grandTotalData = PivotTableViewService.calculateGrandTotal(
+    flatRowData,
+    finalColumns,
+    pivotData
+  );
 
   const renderGrandTotalRow = (stickyTop: number) => {
     if (PivotTableViewService.shouldShowGrandTotal(rows, values)) return null;
 
     return (
       <TableRow className="grand-total-row" style={{ top: `${stickyTop}px` }}>
-        <TableCell colSpan={rows.length || 1} className="grand-total-label-cell">
+        <TableCell
+          colSpan={rows.length || 1}
+          className="grand-total-label-cell"
+        >
           Grand Total
         </TableCell>
         {finalColumns.map(({ key }) => (
-          <TableCell key={`grand-total-${key}`} className="grand-total-value-cell">
+          <TableCell
+            key={`grand-total-${key}`}
+            className="grand-total-value-cell"
+          >
             {grandTotalData[key] || ""}
           </TableCell>
         ))}
@@ -54,14 +64,16 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
 
   // Renders main data body (rows + values + subtotals)
   const renderPivotTableRows = (): JSX.Element[] => {
-
     // Case 1: Only values
     if (rows.length === 0 && columns.length === 0 && values.length > 0) {
-      const allData = flatRowData.flatMap(rowData => rowData.data);
+      const allData = flatRowData.flatMap((rowData) => rowData.data);
       return [
         <TableRow key="total-row" className="total-row">
-          {values.map(valueField => (
-            <TableCell key={`${valueField.field}-${valueField.aggregation}`} className="total-value-cell">
+          {values.map((valueField) => (
+            <TableCell
+              key={`${valueField.field}-${valueField.aggregation}`}
+              className="total-value-cell"
+            >
               {PivotTableViewService.calculateAggregation(allData, valueField)}
             </TableCell>
           ))}
@@ -75,7 +87,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
       const subtotalLevel = rowData.subtotalLevel ?? 0;
 
       return (
-        <TableRow key={rowData.key} className={`pivot-table-row ${isSubtotalRow ? "subtotal-row" : ""}`}>
+        <TableRow
+          key={rowData.key}
+          className={`pivot-table-row ${isSubtotalRow ? "subtotal-row" : ""}`}
+        >
           {rows.map((_, levelIndex) => {
             if (isSubtotalRow) {
               if (levelIndex < subtotalLevel) {
@@ -125,7 +140,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
             return (
               <TableCell
                 key={key}
-                className={`pivot-value-cell ${isSubtotalRow ? "subtotal-value-cell" : ""}`}
+                className={`pivot-value-cell ${
+                  isSubtotalRow ? "subtotal-value-cell" : ""
+                }`}
               >
                 {val}
               </TableCell>
@@ -138,7 +155,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
 
   // Renders all column + row headers (hierarchical)
   const renderPivotTableHeaders = () => {
-    const totalHeaderRows = PivotTableViewService.calculateTotalHeaderRows(columns, values);
+    const totalHeaderRows = PivotTableViewService.calculateTotalHeaderRows(
+      columns,
+      values
+    );
 
     // Case 1: Only row fields
     if (rows.length > 0 && columns.length === 0 && values.length === 0) {
@@ -168,12 +188,17 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               </TableCell>
             ))}
             {values.map((valueField, idx) => (
-              <TableCell key={`value-header-${idx}`} className="value-header-cell">
+              <TableCell
+                key={`value-header-${idx}`}
+                className="value-header-cell"
+              >
                 {valueField.aggregation.toUpperCase()} ({valueField.field})
               </TableCell>
             ))}
           </TableRow>
-          {renderGrandTotalRow(PivotTableViewService.calculateGrandTotalTop(totalHeaderRows))}
+          {renderGrandTotalRow(
+            PivotTableViewService.calculateGrandTotalTop(totalHeaderRows)
+          )}
         </>
       );
     }
@@ -197,7 +222,7 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
               {fieldName}
             </TableCell>
           ))}
-          {levels[0]?.map(node => (
+          {levels[0]?.map((node) => (
             <TableCell
               key={node.key}
               colSpan={node.colSpan}
@@ -211,11 +236,13 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         {/* Additional nested column levels */}
         {levels.slice(1).map((lvlNodes, levelIndex) => (
           <TableRow key={`col-level-${levelIndex + 1}`} className="header-row">
-            {lvlNodes.map(node => (
+            {lvlNodes.map((node) => (
               <TableCell
                 key={node.key}
                 colSpan={node.colSpan}
-                className={`column-header-cell column-header-level-${levelIndex + 1}`}
+                className={`column-header-cell column-header-level-${
+                  levelIndex + 1
+                }`}
                 style={{ top: `${30 * (levelIndex + 1)}px` }}
               >
                 {node.value}
@@ -227,7 +254,10 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         {/* Aggregation headers (sum, avg, etc.) */}
         {values.length > 0 && (
           <TableRow key="aggregation-row" className="header-row">
-            {PivotTableViewService.generateValueColumns(leafColumnKeys, values).map(({ key, valueField }) => (
+            {PivotTableViewService.generateValueColumns(
+              leafColumnKeys,
+              values
+            ).map(({ key, valueField }) => (
               <TableCell
                 key={key}
                 className="aggregation-header-cell"
@@ -240,7 +270,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
         )}
 
         {/* Grand total row under headers */}
-        {renderGrandTotalRow(PivotTableViewService.calculateGrandTotalTop(totalHeaderRows))}
+        {renderGrandTotalRow(
+          PivotTableViewService.calculateGrandTotalTop(totalHeaderRows)
+        )}
       </>
     );
   };
@@ -249,7 +281,9 @@ const PivotTableView: React.FC<PivotTableViewProps> = ({
     <Box className="pivot-table-container">
       <TableContainer component={Paper} className="table-container">
         <Table className="table" stickyHeader aria-label="Pivot Table View">
-          <TableHead className="table-head">{renderPivotTableHeaders()}</TableHead>
+          <TableHead className="table-head">
+            {renderPivotTableHeaders()}
+          </TableHead>
           <TableBody className="table-body">{renderPivotTableRows()}</TableBody>
         </Table>
       </TableContainer>

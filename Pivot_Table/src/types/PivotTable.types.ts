@@ -26,10 +26,10 @@ export interface NestedColumnData {
 }
 
 export interface FlatRowData {
-  keys: string[];
+  key: string;
+  parentId: string | null;
   values: string[]; 
   data: CSVRow[];
-  key: string; 
   level: number;
   isSubtotal?: boolean; 
   subtotalLevel?: number;
