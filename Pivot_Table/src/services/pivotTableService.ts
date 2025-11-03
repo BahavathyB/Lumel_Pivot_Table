@@ -118,7 +118,7 @@ export class PivotTableService {
         : Object.entries(
             lodash.groupBy(data, (row) => String(row[rows[level]!] ?? "N/A"))
           ).map(([value, group]) => {
-            const key = parentKey ? `${parentKey}|${value}` : value;
+            const key = parentKey ? `${parentKey}_${value}` : value;
             return {
               key,
               value,
@@ -434,6 +434,7 @@ export class PivotTableService {
     leafColumnKeys: string[],
     values: ValueField[]
   ): Record<string, Record<string, Record<string, string>>> {
+      
     const data: Record<string, Record<string, Record<string, string>>> = {};
 
     // Helper to get direct children for subtotal
@@ -455,7 +456,7 @@ export class PivotTableService {
           (!colKey ||
             colKey === "total" ||
             columns.every(
-              (field, i) =>
+              (field, i) => 
                 String(row[field] ?? "") === (colKey.split("|")[i] || "")
             ))
       );
